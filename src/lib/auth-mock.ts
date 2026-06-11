@@ -9,12 +9,10 @@ export const mockUsers: Record<string, MockUser & { senha: string }> = {
 
 const KEY = "gc.session";
 const listeners = new Set<() => void>();
+let cached: MockUser | null = null;
+let hydrated = false;
 
-function emit() {
-  listeners.forEach((l) => l());
-}
-
-export function getSession(): MockUser | null {
+function readStorage(): MockUser | null {
   if (typeof window === "undefined") return null;
   const raw = window.localStorage.getItem(KEY);
   if (!raw) return null;
@@ -23,6 +21,19 @@ export function getSession(): MockUser | null {
   } catch {
     return null;
   }
+}
+
+function emit() {
+  cached = readStorage();
+  listeners.forEach((l) => l());
+}
+
+export function getSession(): MockUser | null {
+  if (!hydrated && typeof window !== "undefined") {
+    cached = readStorage();
+    hydrated = true;
+  }
+  return cached;
 }
 
 export function login(usuario: string, senha: string): MockUser | null {
@@ -41,7 +52,9 @@ export function logout() {
 
 function subscribe(cb: () => void) {
   listeners.add(cb);
-  return () => listeners.delete(cb);
+  return () => {
+    listeners.delete(cb);
+  };
 }
 
 export function useSession(): MockUser | null {
