@@ -85,6 +85,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@GestaoCordial" },
+      { name: "twitter:title", content: "Gestão Cordial" },
+      { name: "twitter:description", content: "Gestão integrada para Cordial Imóveis e Morar Imóveis." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/cb13394c-ede3-4688-8651-ef1bb8798ea9/id-preview-0b49a30c--4a266943-83da-4f52-813b-3dc7dc75492b.lovable.app-1781206433000.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/cb13394c-ede3-4688-8651-ef1bb8798ea9/id-preview-0b49a30c--4a266943-83da-4f52-813b-3dc7dc75492b.lovable.app-1781206433000.png" },
     ],
     links: [
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
