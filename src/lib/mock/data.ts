@@ -44,7 +44,7 @@ export type Cliente = {
 };
 
 export const clientesSeed: Cliente[] = [
-  { id: "cl1", nome: "Ana Beatriz Moreira", iniciais: "AB", telefone: "(11) 98765-1234", email: "ana.beatriz@email.com", tipo: "Compradora" as any, interesse: "Apartamento 2 quartos Jardins", orcamento: 1200000, imobiliaria: "cordial", criadoEm: "2026-05-21" },
+  { id: "cl1", nome: "Ana Beatriz Moreira", iniciais: "AB", telefone: "(11) 98765-1234", email: "ana.beatriz@email.com", tipo: "Comprador", interesse: "Apartamento 2 quartos Jardins", orcamento: 1200000, imobiliaria: "cordial", criadoEm: "2026-05-21" },
   { id: "cl2", nome: "João Pedro Salles", iniciais: "JP", telefone: "(11) 99123-4567", email: "jp.salles@email.com", tipo: "Locatário", interesse: "Loft Vila Madalena", orcamento: 6500, imobiliaria: "cordial", criadoEm: "2026-06-01" },
   { id: "cl3", nome: "Marina Costa", iniciais: "MC", telefone: "(11) 97777-8888", email: "marina@email.com", tipo: "Comprador", interesse: "Casa Bragança", orcamento: 1800000, imobiliaria: "morar", criadoEm: "2026-06-04" },
   { id: "cl4", nome: "Ricardo Tavares", iniciais: "RT", telefone: "(11) 96666-5555", email: "rtavares@email.com", tipo: "Proprietário", interesse: "Listar cobertura Itaim", orcamento: 0, imobiliaria: "morar", criadoEm: "2026-05-15" },
