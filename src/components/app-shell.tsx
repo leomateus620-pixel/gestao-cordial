@@ -6,13 +6,14 @@ import { AgencySwitcher } from "./agency-switcher";
 import { useSession } from "@/lib/auth-mock";
 import { cn } from "@/lib/utils";
 
-const navItems = [
+type NavItem = { to: string; label: string; icon: typeof Home; exact?: boolean };
+const navItems: NavItem[] = [
   { to: "/", label: "Início", icon: Home, exact: true },
   { to: "/atendimentos", label: "Atend.", icon: Inbox },
   { to: "/imoveis", label: "Imóveis", icon: Building2 },
   { to: "/agenda", label: "Agenda", icon: Calendar },
   { to: "/mais", label: "Mais", icon: LayoutGrid },
-] as const;
+];
 
 export function AppShell() {
   const session = useSession();
