@@ -1,50 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import {
-  Users,
-  UserCog,
-  FileText,
-  Wallet,
-  BarChart3,
-  LogOut,
-  Building2,
-  Inbox,
-  Calendar,
-  KeyRound,
-  BadgeDollarSign,
-  Megaphone,
-  Cable,
-  Settings,
-} from "lucide-react";
+import { Building2, LogOut } from "lucide-react";
 import { useSession, logout } from "@/lib/auth-mock";
-import { PermissionGuard } from "@/components/permission-guard";
-import type { AppModule } from "@/lib/mock/permissions";
-
-const items = [
-  { to: "/atendimentos", label: "Atendimentos", desc: "Leads, visitas e propostas", icon: Inbox },
-  { to: "/imoveis", label: "Imóveis", desc: "Carteira completa", icon: Building2 },
-  { to: "/alugueis", label: "Aluguéis", desc: "Locações, contratos e atrasos", icon: KeyRound },
-  { to: "/vendas", label: "Vendas", desc: "VGV e oportunidades", icon: BadgeDollarSign },
-  { to: "/clientes", label: "Clientes", desc: "Cadastro e histórico", icon: Users },
-  { to: "/agenda", label: "Agenda", desc: "Visitas e compromissos", icon: Calendar },
-  { to: "/corretores", label: "Corretores", desc: "Equipe e performance", icon: UserCog },
-  { to: "/contratos", label: "Contratos", desc: "Vendas e aluguéis", icon: FileText },
-  { to: "/financeiro", label: "Financeiro", desc: "Receita e comissões", icon: Wallet },
-  { to: "/marketing", label: "Marketing", desc: "Campanhas e leads", icon: Megaphone },
-  {
-    to: "/documentos",
-    label: "Documentos",
-    desc: "Contratos, propostas e vistorias",
-    icon: FileText,
-  },
-  { to: "/integracoes", label: "Integrações", desc: "Conectores e sincronizações", icon: Cable },
-  {
-    to: "/configuracoes",
-    label: "Configurações",
-    desc: "Preferências operacionais",
-    icon: Settings,
-  },
-  { to: "/relatorios", label: "Relatórios", desc: "Indicadores e ranking", icon: BarChart3 },
-];
+import { getVisibleModules, moduleItems } from "@/components/shared/module-menu";
 
 export const Route = createFileRoute("/_app/mais")({
   head: () => ({ meta: [{ title: "Mais — Gestão Cordial" }] }),
@@ -54,6 +11,10 @@ export const Route = createFileRoute("/_app/mais")({
 function Page() {
   const session = useSession();
   const navigate = useNavigate();
+  const items = getVisibleModules(
+    session?.modules,
+    moduleItems.filter((m) => m.to !== "/mais"),
+  );
 
   function sair() {
     logout();
