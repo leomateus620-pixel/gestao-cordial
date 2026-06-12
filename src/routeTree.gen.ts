@@ -21,6 +21,9 @@ import { Route as AppContratosRouteImport } from './routes/_app.contratos'
 import { Route as AppClientesRouteImport } from './routes/_app.clientes'
 import { Route as AppAtendimentosRouteImport } from './routes/_app.atendimentos'
 import { Route as AppAgendaRouteImport } from './routes/_app.agenda'
+import { Route as AppImoveisImovelIdRouteImport } from './routes/_app.imoveis.$imovelId'
+import { Route as AppContratosContratoIdRouteImport } from './routes/_app.contratos.$contratoId'
+import { Route as AppClientesClienteIdRouteImport } from './routes/_app.clientes.$clienteId'
 
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
@@ -81,32 +84,53 @@ const AppAgendaRoute = AppAgendaRouteImport.update({
   path: '/agenda',
   getParentRoute: () => AppRoute,
 } as any)
+const AppImoveisImovelIdRoute = AppImoveisImovelIdRouteImport.update({
+  id: '/$imovelId',
+  path: '/$imovelId',
+  getParentRoute: () => AppImoveisRoute,
+} as any)
+const AppContratosContratoIdRoute = AppContratosContratoIdRouteImport.update({
+  id: '/$contratoId',
+  path: '/$contratoId',
+  getParentRoute: () => AppContratosRoute,
+} as any)
+const AppClientesClienteIdRoute = AppClientesClienteIdRouteImport.update({
+  id: '/$clienteId',
+  path: '/$clienteId',
+  getParentRoute: () => AppClientesRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AppIndexRoute
   '/login': typeof LoginRoute
   '/agenda': typeof AppAgendaRoute
   '/atendimentos': typeof AppAtendimentosRoute
-  '/clientes': typeof AppClientesRoute
-  '/contratos': typeof AppContratosRoute
+  '/clientes': typeof AppClientesRouteWithChildren
+  '/contratos': typeof AppContratosRouteWithChildren
   '/corretores': typeof AppCorretoresRoute
   '/financeiro': typeof AppFinanceiroRoute
-  '/imoveis': typeof AppImoveisRoute
+  '/imoveis': typeof AppImoveisRouteWithChildren
   '/mais': typeof AppMaisRoute
   '/relatorios': typeof AppRelatoriosRoute
+  '/clientes/$clienteId': typeof AppClientesClienteIdRoute
+  '/contratos/$contratoId': typeof AppContratosContratoIdRoute
+  '/imoveis/$imovelId': typeof AppImoveisImovelIdRoute
 }
 export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/agenda': typeof AppAgendaRoute
   '/atendimentos': typeof AppAtendimentosRoute
-  '/clientes': typeof AppClientesRoute
-  '/contratos': typeof AppContratosRoute
+  '/clientes': typeof AppClientesRouteWithChildren
+  '/contratos': typeof AppContratosRouteWithChildren
   '/corretores': typeof AppCorretoresRoute
   '/financeiro': typeof AppFinanceiroRoute
-  '/imoveis': typeof AppImoveisRoute
+  '/imoveis': typeof AppImoveisRouteWithChildren
   '/mais': typeof AppMaisRoute
   '/relatorios': typeof AppRelatoriosRoute
   '/': typeof AppIndexRoute
+  '/clientes/$clienteId': typeof AppClientesClienteIdRoute
+  '/contratos/$contratoId': typeof AppContratosContratoIdRoute
+  '/imoveis/$imovelId': typeof AppImoveisImovelIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -114,14 +138,17 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/_app/agenda': typeof AppAgendaRoute
   '/_app/atendimentos': typeof AppAtendimentosRoute
-  '/_app/clientes': typeof AppClientesRoute
-  '/_app/contratos': typeof AppContratosRoute
+  '/_app/clientes': typeof AppClientesRouteWithChildren
+  '/_app/contratos': typeof AppContratosRouteWithChildren
   '/_app/corretores': typeof AppCorretoresRoute
   '/_app/financeiro': typeof AppFinanceiroRoute
-  '/_app/imoveis': typeof AppImoveisRoute
+  '/_app/imoveis': typeof AppImoveisRouteWithChildren
   '/_app/mais': typeof AppMaisRoute
   '/_app/relatorios': typeof AppRelatoriosRoute
   '/_app/': typeof AppIndexRoute
+  '/_app/clientes/$clienteId': typeof AppClientesClienteIdRoute
+  '/_app/contratos/$contratoId': typeof AppContratosContratoIdRoute
+  '/_app/imoveis/$imovelId': typeof AppImoveisImovelIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -137,6 +164,9 @@ export interface FileRouteTypes {
     | '/imoveis'
     | '/mais'
     | '/relatorios'
+    | '/clientes/$clienteId'
+    | '/contratos/$contratoId'
+    | '/imoveis/$imovelId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/login'
@@ -150,6 +180,9 @@ export interface FileRouteTypes {
     | '/mais'
     | '/relatorios'
     | '/'
+    | '/clientes/$clienteId'
+    | '/contratos/$contratoId'
+    | '/imoveis/$imovelId'
   id:
     | '__root__'
     | '/_app'
@@ -164,6 +197,9 @@ export interface FileRouteTypes {
     | '/_app/mais'
     | '/_app/relatorios'
     | '/_app/'
+    | '/_app/clientes/$clienteId'
+    | '/_app/contratos/$contratoId'
+    | '/_app/imoveis/$imovelId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -257,17 +293,74 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAgendaRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/imoveis/$imovelId': {
+      id: '/_app/imoveis/$imovelId'
+      path: '/$imovelId'
+      fullPath: '/imoveis/$imovelId'
+      preLoaderRoute: typeof AppImoveisImovelIdRouteImport
+      parentRoute: typeof AppImoveisRoute
+    }
+    '/_app/contratos/$contratoId': {
+      id: '/_app/contratos/$contratoId'
+      path: '/$contratoId'
+      fullPath: '/contratos/$contratoId'
+      preLoaderRoute: typeof AppContratosContratoIdRouteImport
+      parentRoute: typeof AppContratosRoute
+    }
+    '/_app/clientes/$clienteId': {
+      id: '/_app/clientes/$clienteId'
+      path: '/$clienteId'
+      fullPath: '/clientes/$clienteId'
+      preLoaderRoute: typeof AppClientesClienteIdRouteImport
+      parentRoute: typeof AppClientesRoute
+    }
   }
 }
+
+interface AppClientesRouteChildren {
+  AppClientesClienteIdRoute: typeof AppClientesClienteIdRoute
+}
+
+const AppClientesRouteChildren: AppClientesRouteChildren = {
+  AppClientesClienteIdRoute: AppClientesClienteIdRoute,
+}
+
+const AppClientesRouteWithChildren = AppClientesRoute._addFileChildren(
+  AppClientesRouteChildren,
+)
+
+interface AppContratosRouteChildren {
+  AppContratosContratoIdRoute: typeof AppContratosContratoIdRoute
+}
+
+const AppContratosRouteChildren: AppContratosRouteChildren = {
+  AppContratosContratoIdRoute: AppContratosContratoIdRoute,
+}
+
+const AppContratosRouteWithChildren = AppContratosRoute._addFileChildren(
+  AppContratosRouteChildren,
+)
+
+interface AppImoveisRouteChildren {
+  AppImoveisImovelIdRoute: typeof AppImoveisImovelIdRoute
+}
+
+const AppImoveisRouteChildren: AppImoveisRouteChildren = {
+  AppImoveisImovelIdRoute: AppImoveisImovelIdRoute,
+}
+
+const AppImoveisRouteWithChildren = AppImoveisRoute._addFileChildren(
+  AppImoveisRouteChildren,
+)
 
 interface AppRouteChildren {
   AppAgendaRoute: typeof AppAgendaRoute
   AppAtendimentosRoute: typeof AppAtendimentosRoute
-  AppClientesRoute: typeof AppClientesRoute
-  AppContratosRoute: typeof AppContratosRoute
+  AppClientesRoute: typeof AppClientesRouteWithChildren
+  AppContratosRoute: typeof AppContratosRouteWithChildren
   AppCorretoresRoute: typeof AppCorretoresRoute
   AppFinanceiroRoute: typeof AppFinanceiroRoute
-  AppImoveisRoute: typeof AppImoveisRoute
+  AppImoveisRoute: typeof AppImoveisRouteWithChildren
   AppMaisRoute: typeof AppMaisRoute
   AppRelatoriosRoute: typeof AppRelatoriosRoute
   AppIndexRoute: typeof AppIndexRoute
@@ -276,11 +369,11 @@ interface AppRouteChildren {
 const AppRouteChildren: AppRouteChildren = {
   AppAgendaRoute: AppAgendaRoute,
   AppAtendimentosRoute: AppAtendimentosRoute,
-  AppClientesRoute: AppClientesRoute,
-  AppContratosRoute: AppContratosRoute,
+  AppClientesRoute: AppClientesRouteWithChildren,
+  AppContratosRoute: AppContratosRouteWithChildren,
   AppCorretoresRoute: AppCorretoresRoute,
   AppFinanceiroRoute: AppFinanceiroRoute,
-  AppImoveisRoute: AppImoveisRoute,
+  AppImoveisRoute: AppImoveisRouteWithChildren,
   AppMaisRoute: AppMaisRoute,
   AppRelatoriosRoute: AppRelatoriosRoute,
   AppIndexRoute: AppIndexRoute,

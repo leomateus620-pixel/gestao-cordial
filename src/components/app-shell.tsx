@@ -27,7 +27,7 @@ export function AppShell() {
   if (!session) return null;
 
   return (
-    <div className="relative mx-auto flex min-h-screen w-full max-w-[480px] flex-col font-sans text-foreground">
+    <div className="relative mx-auto flex min-h-screen w-full max-w-[1180px] flex-col font-sans text-foreground">
       <MeshBackground />
 
       <header className="sticky top-0 z-30 flex flex-col gap-3 px-5 pt-6 pb-3">
@@ -36,9 +36,7 @@ export function AppShell() {
             <span className="text-[10px] font-bold uppercase tracking-[0.22em] text-primary">
               Gestão Cordial
             </span>
-            <h1 className="truncate text-xl font-semibold tracking-tight">
-              Olá, {session.nome}
-            </h1>
+            <h1 className="truncate text-xl font-semibold tracking-tight">Olá, {session.nome}</h1>
           </div>
           <Link
             to="/mais"
@@ -55,7 +53,7 @@ export function AppShell() {
         <Outlet />
       </main>
 
-      <nav className="fixed bottom-5 left-1/2 z-40 flex h-16 w-[calc(100%-2rem)] max-w-[448px] -translate-x-1/2 items-center justify-around rounded-full glass-panel-strong px-2">
+      <nav className="fixed bottom-5 left-1/2 z-40 flex h-16 w-[calc(100%-2rem)] max-w-[448px] md:max-w-[720px] -translate-x-1/2 items-center justify-around rounded-full glass-panel-strong px-2">
         {navItems.map((item) => {
           const active = item.exact ? pathname === item.to : pathname.startsWith(item.to);
           const Icon = item.icon;
@@ -68,10 +66,11 @@ export function AppShell() {
                 active ? "text-primary" : "text-foreground/45",
               )}
             >
-              <Icon className={cn("size-5", active && "drop-shadow-sm")} strokeWidth={active ? 2.4 : 1.8} />
-              <span className="text-[9px] font-bold uppercase tracking-tighter">
-                {item.label}
-              </span>
+              <Icon
+                className={cn("size-5", active && "drop-shadow-sm")}
+                strokeWidth={active ? 2.4 : 1.8}
+              />
+              <span className="text-[9px] font-bold uppercase tracking-tighter">{item.label}</span>
               {active && <span className="absolute -bottom-1 size-1 rounded-full bg-primary" />}
             </Link>
           );
