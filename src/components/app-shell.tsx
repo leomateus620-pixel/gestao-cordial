@@ -1,5 +1,21 @@
 import { Link, Outlet, useRouterState, useNavigate } from "@tanstack/react-router";
-import { Home, Inbox, Building2, Calendar, LayoutGrid } from "lucide-react";
+import {
+  Home,
+  Inbox,
+  Building2,
+  Calendar,
+  LayoutGrid,
+  KeyRound,
+  BadgeDollarSign,
+  Megaphone,
+  FileText,
+  Cable,
+  Settings,
+  Users,
+  UserCog,
+  Wallet,
+  BarChart3,
+} from "lucide-react";
 import { useEffect } from "react";
 import { MeshBackground } from "./mesh-background";
 import { AgencySwitcher } from "./agency-switcher";
@@ -11,7 +27,18 @@ const navItems: NavItem[] = [
   { to: "/", label: "Início", icon: Home, exact: true },
   { to: "/atendimentos", label: "Atend.", icon: Inbox },
   { to: "/imoveis", label: "Imóveis", icon: Building2 },
+  { to: "/alugueis", label: "Aluguéis", icon: KeyRound },
+  { to: "/vendas", label: "Vendas", icon: BadgeDollarSign },
+  { to: "/clientes", label: "Clientes", icon: Users },
   { to: "/agenda", label: "Agenda", icon: Calendar },
+  { to: "/corretores", label: "Equipe", icon: UserCog },
+  { to: "/contratos", label: "Contratos", icon: FileText },
+  { to: "/financeiro", label: "Finanças", icon: Wallet },
+  { to: "/marketing", label: "Marketing", icon: Megaphone },
+  { to: "/documentos", label: "Docs", icon: FileText },
+  { to: "/integracoes", label: "Integrações", icon: Cable },
+  { to: "/configuracoes", label: "Config.", icon: Settings },
+  { to: "/relatorios", label: "Relatórios", icon: BarChart3 },
   { to: "/mais", label: "Mais", icon: LayoutGrid },
 ];
 
@@ -36,9 +63,7 @@ export function AppShell() {
             <span className="text-[10px] font-bold uppercase tracking-[0.22em] text-primary">
               Gestão Cordial
             </span>
-            <h1 className="truncate text-xl font-semibold tracking-tight">
-              Olá, {session.nome}
-            </h1>
+            <h1 className="truncate text-xl font-semibold tracking-tight">Olá, {session.nome}</h1>
           </div>
           <Link
             to="/mais"
@@ -55,7 +80,7 @@ export function AppShell() {
         <Outlet />
       </main>
 
-      <nav className="fixed bottom-5 left-1/2 z-40 flex h-16 w-[calc(100%-2rem)] max-w-[448px] -translate-x-1/2 items-center justify-around rounded-full glass-panel-strong px-2">
+      <nav className="fixed bottom-5 left-1/2 z-40 flex h-16 w-[calc(100%-2rem)] max-w-[448px] -translate-x-1/2 items-center gap-1 overflow-x-auto rounded-full glass-panel-strong px-2">
         {navItems.map((item) => {
           const active = item.exact ? pathname === item.to : pathname.startsWith(item.to);
           const Icon = item.icon;
@@ -64,14 +89,15 @@ export function AppShell() {
               key={item.to}
               to={item.to as never}
               className={cn(
-                "flex flex-1 flex-col items-center justify-center gap-1 py-1 transition-colors",
+                "relative flex min-w-16 flex-col items-center justify-center gap-1 py-1 transition-colors",
                 active ? "text-primary" : "text-foreground/45",
               )}
             >
-              <Icon className={cn("size-5", active && "drop-shadow-sm")} strokeWidth={active ? 2.4 : 1.8} />
-              <span className="text-[9px] font-bold uppercase tracking-tighter">
-                {item.label}
-              </span>
+              <Icon
+                className={cn("size-5", active && "drop-shadow-sm")}
+                strokeWidth={active ? 2.4 : 1.8}
+              />
+              <span className="text-[9px] font-bold uppercase tracking-tighter">{item.label}</span>
               {active && <span className="absolute -bottom-1 size-1 rounded-full bg-primary" />}
             </Link>
           );

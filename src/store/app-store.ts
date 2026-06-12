@@ -8,6 +8,10 @@ import {
   corretoresSeed,
   imoveisSeed,
   lancamentosSeed,
+  campanhasMarketingSeed,
+  configuracoesSeed,
+  documentosSeed,
+  integracoesSeed,
   type AgencyId,
   type Atendimento,
   type Cliente,
@@ -16,6 +20,10 @@ import {
   type Corretor,
   type Imovel,
   type Lancamento,
+  type CampanhaMarketing,
+  type ConfiguracaoOperacional,
+  type DocumentoOperacional,
+  type IntegracaoOperacional,
 } from "@/lib/mock/data";
 
 type AgencyFilter = AgencyId | "todas";
@@ -29,6 +37,10 @@ type State = {
   contratos: Contrato[];
   agenda: Compromisso[];
   lancamentos: Lancamento[];
+  campanhasMarketing: CampanhaMarketing[];
+  documentos: DocumentoOperacional[];
+  integracoes: IntegracaoOperacional[];
+  configuracoes: ConfiguracaoOperacional[];
   setAgency: (a: AgencyFilter) => void;
   addCliente: (c: Omit<Cliente, "id" | "iniciais" | "criadoEm">) => void;
   addImovel: (i: Omit<Imovel, "id">) => void;
@@ -54,6 +66,10 @@ export const useApp = create<State>()(
       contratos: contratosSeed,
       agenda: agendaSeed,
       lancamentos: lancamentosSeed,
+      campanhasMarketing: campanhasMarketingSeed,
+      documentos: documentosSeed,
+      integracoes: integracoesSeed,
+      configuracoes: configuracoesSeed,
       setAgency: (agency) => set({ agency }),
       addCliente: (c) =>
         set((s) => ({
