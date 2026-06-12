@@ -1,10 +1,11 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { Search, Phone, Mail } from "lucide-react";
+import { Search } from "lucide-react";
 import { useApp, useFiltered } from "@/store/app-store";
 import { Fab } from "@/components/fab";
 import { NovoClienteSheet } from "@/components/sheets/novo-cliente";
-import { brl } from "@/lib/format";
+import { ClientCard } from "@/components/shared/client-card";
+import { EmptyState } from "@/components/shared/empty-state";
 
 export const Route = createFileRoute("/_app/clientes")({
   head: () => ({ meta: [{ title: "Clientes — Gestão Cordial" }] }),
@@ -25,12 +26,22 @@ function Page() {
     <>
       <div className="glass-panel mb-4 flex items-center gap-2 rounded-2xl px-3 py-2">
         <Search className="size-4 text-foreground/50" />
-        <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Buscar cliente..." className="flex-1 bg-transparent text-sm outline-none placeholder:text-foreground/40" />
+        <input
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
+          placeholder="Buscar cliente..."
+          className="flex-1 bg-transparent text-sm outline-none placeholder:text-foreground/40"
+        />
       </div>
 
       <div className="space-y-2">
         {list.map((c) => (
-          <div key={c.id} className="glass-panel rounded-2xl p-3">
+          <Link
+            key={c.id}
+            to="/clientes/$clienteId"
+            params={{ clienteId: c.id }}
+            className="block glass-panel rounded-2xl p-3 transition hover:bg-white/70"
+          >
             <div className="flex items-center justify-between gap-3">
               <div className="flex min-w-0 items-center gap-3">
                 <div className="grid size-10 shrink-0 place-items-center rounded-full bg-primary/12 text-xs font-bold text-primary">
@@ -47,17 +58,31 @@ function Page() {
             </div>
             <div className="mt-2 flex items-center justify-between border-t border-white/40 pt-2 text-[11px] text-foreground/60">
               <div className="flex items-center gap-3">
-                <span className="flex items-center gap-1"><Phone className="size-3" />{c.telefone}</span>
+                <span className="flex items-center gap-1">
+                  <Phone className="size-3" />
+                  {c.telefone}
+                </span>
               </div>
-              {c.orcamento > 0 && <span className="font-mono font-semibold text-foreground/80">{brl(c.orcamento, { compact: true })}</span>}
+              {c.orcamento > 0 && (
+                <span className="font-mono font-semibold text-foreground/80">
+                  {brl(c.orcamento, { compact: true })}
+                </span>
+              )}
             </div>
             {c.email && (
               <div className="mt-1 flex items-center gap-1 text-[11px] text-foreground/55">
-                <Mail className="size-3" />{c.email}
+                <Mail className="size-3" />
+                {c.email}
               </div>
             )}
-          </div>
+          </Link>
         ))}
+        {list.length === 0 && (
+          <EmptyState
+            title="Nenhum cliente encontrado"
+            description="Tente buscar por outro nome ou cadastre um novo cliente."
+          />
+        )}
       </div>
 
       <Fab onClick={() => setOpen(true)} label="Novo cliente" />

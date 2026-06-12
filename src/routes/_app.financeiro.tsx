@@ -12,6 +12,8 @@ import { Link as LinkIcon } from "lucide-react";
 import { useApp, useFiltered } from "@/store/app-store";
 import { KpiCard } from "@/components/kpi-card";
 import { SectionHeader } from "@/components/section-header";
+import { ChartCard } from "@/components/shared/chart-card";
+import { FinancialSummaryCard } from "@/components/shared/financial-summary-card";
 import { StatusBadge } from "@/components/status-badge";
 import { brl } from "@/lib/format";
 import { receitaMensal } from "@/lib/mock/data";
@@ -57,45 +59,51 @@ function Page() {
         />
       </section>
 
-      <section className="glass-panel mb-6 rounded-3xl p-5">
-        <SectionHeader title="Fluxo de receita" />
-        <div className="h-44">
-          <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={data}>
-              <defs>
-                <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="hsl(18 55% 50%)" stopOpacity={0.45} />
-                  <stop offset="100%" stopColor="hsl(18 55% 50%)" stopOpacity={0.02} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid stroke="rgba(80,40,20,0.06)" vertical={false} />
-              <XAxis
-                dataKey="mes"
-                tickLine={false}
-                axisLine={false}
-                tick={{ fontSize: 10, fill: "rgba(50,30,15,0.5)" }}
-              />
-              <YAxis hide />
-              <Tooltip
-                cursor={{ stroke: "rgba(196,101,74,0.3)" }}
-                contentStyle={{
-                  background: "rgba(255,255,255,0.9)",
-                  border: "1px solid rgba(255,255,255,0.7)",
-                  borderRadius: 12,
-                  fontSize: 11,
-                }}
-                formatter={(v) => brl(Number(v), { compact: true })}
-              />
-              <Area
-                type="monotone"
-                dataKey="total"
-                stroke="hsl(18 55% 50%)"
-                strokeWidth={2.4}
-                fill="url(#g)"
-              />
-            </AreaChart>
-          </ResponsiveContainer>
-        </div>
+      <ChartCard title="Fluxo de receita" heightClassName="h-44">
+        <ResponsiveContainer width="100%" height="100%">
+          <AreaChart data={data}>
+            <defs>
+              <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="hsl(18 55% 50%)" stopOpacity={0.45} />
+                <stop offset="100%" stopColor="hsl(18 55% 50%)" stopOpacity={0.02} />
+              </linearGradient>
+            </defs>
+            <CartesianGrid stroke="rgba(80,40,20,0.06)" vertical={false} />
+            <XAxis
+              dataKey="mes"
+              tickLine={false}
+              axisLine={false}
+              tick={{ fontSize: 10, fill: "rgba(50,30,15,0.5)" }}
+            />
+            <YAxis hide />
+            <Tooltip
+              cursor={{ stroke: "rgba(196,101,74,0.3)" }}
+              contentStyle={{
+                background: "rgba(255,255,255,0.9)",
+                border: "1px solid rgba(255,255,255,0.7)",
+                borderRadius: 12,
+                fontSize: 11,
+              }}
+              formatter={(v) => brl(Number(v), { compact: true })}
+            />
+            <Area
+              type="monotone"
+              dataKey="total"
+              stroke="hsl(18 55% 50%)"
+              strokeWidth={2.4}
+              fill="url(#g)"
+            />
+          </AreaChart>
+        </ResponsiveContainer>
+      </ChartCard>
+
+      <section className="mb-6">
+        <FinancialSummaryCard
+          entradas={totalEntradas}
+          saidas={totalSaidas}
+          pendente={inadimplencia}
+          footer="Valores consolidados para a imobiliária selecionada."
+        />
       </section>
 
       <section className="mb-6">
@@ -130,22 +138,20 @@ function Page() {
         </div>
       </section>
 
-      <PermissionGuard modules={["integracoes"]}>
-        <Link to="/integracoes" className="glass-panel block rounded-3xl p-5 active:scale-[0.99]">
-          <div className="flex items-start gap-3">
-            <div className="grid size-10 shrink-0 place-items-center rounded-xl bg-sky-500/15 text-sky-700">
-              <LinkIcon className="size-5" />
-            </div>
-            <div>
-              <h3 className="text-sm font-semibold">Integração Conta Azul</h3>
-              <p className="mt-1 text-[11px] text-foreground/60">
-                Tela mockada para status, logs e importações futuras. Sem API real até backend,
-                Supabase/RLS e OAuth.
-              </p>
-              <span className="mt-2 inline-block rounded-full bg-foreground/8 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-foreground/55">
-                Abrir mock Conta Azul
-              </span>
-            </div>
+      <section className="glass-panel rounded-3xl p-5">
+        <div className="flex items-start gap-3">
+          <div className="grid size-10 shrink-0 place-items-center rounded-xl bg-sky-500/15 text-sky-700">
+            <LinkIcon className="size-5" />
+          </div>
+          <div>
+            <h3 className="text-sm font-semibold">Integração Conta Azul</h3>
+            <p className="mt-1 text-[11px] text-foreground/60">
+              Em breve: sincronize lançamentos, repasses e comissões automaticamente com o Conta
+              Azul.
+            </p>
+            <span className="mt-2 inline-block rounded-full bg-foreground/8 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-foreground/55">
+              Disponível em breve
+            </span>
           </div>
         </Link>
       </PermissionGuard>
