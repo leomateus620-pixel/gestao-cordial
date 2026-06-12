@@ -1,5 +1,5 @@
 import { Link, Outlet, useRouterState, useNavigate } from "@tanstack/react-router";
-import { Bell, Building2, Calendar, Home, Inbox, LayoutGrid, Menu } from "lucide-react";
+import { Building2, Menu } from "lucide-react";
 import { useEffect, useState } from "react";
 import { MeshBackground } from "./mesh-background";
 import { AgencySwitcher } from "./agency-switcher";
@@ -8,27 +8,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import { useSession } from "@/lib/auth-mock";
 import { cn } from "@/lib/utils";
 import { NotificationBell } from "./notification-bell";
-import type { AppModule } from "@/lib/mock/permissions";
-
-type NavItem = { to: string; label: string; icon: typeof Home; module: AppModule; exact?: boolean };
-const navItems: NavItem[] = [
-  { to: "/", label: "Início", icon: Home, exact: true },
-  { to: "/atendimentos", label: "Atend.", icon: Inbox },
-  { to: "/imoveis", label: "Imóveis", icon: Building2 },
-  { to: "/alugueis", label: "Aluguéis", icon: KeyRound },
-  { to: "/vendas", label: "Vendas", icon: BadgeDollarSign },
-  { to: "/clientes", label: "Clientes", icon: Users },
-  { to: "/agenda", label: "Agenda", icon: Calendar },
-  { to: "/corretores", label: "Equipe", icon: UserCog },
-  { to: "/contratos", label: "Contratos", icon: FileText },
-  { to: "/financeiro", label: "Finanças", icon: Wallet },
-  { to: "/marketing", label: "Marketing", icon: Megaphone },
-  { to: "/documentos", label: "Docs", icon: FileText },
-  { to: "/integracoes", label: "Integrações", icon: Cable },
-  { to: "/configuracoes", label: "Config.", icon: Settings },
-  { to: "/relatorios", label: "Relatórios", icon: BarChart3 },
-  { to: "/mais", label: "Mais", icon: LayoutGrid },
-];
+import { getVisibleModules, primaryModuleItems } from "./shared/module-menu";
 
 export function AppShell() {
   const session = useSession();
@@ -42,7 +22,7 @@ export function AppShell() {
 
   if (!session) return null;
 
-  const visibleNav = navItems.filter((item) => session.modules.includes(item.module));
+  const bottomNav = getVisibleModules(session.modules, primaryModuleItems);
 
   return (
     <div className="relative mx-auto flex min-h-screen w-full max-w-[1180px] flex-col font-sans text-foreground">
@@ -151,7 +131,7 @@ export function AppShell() {
       </div>
 
       <nav className="glass-panel-strong fixed bottom-5 left-1/2 z-40 flex h-16 w-[calc(100%-2rem)] max-w-[448px] -translate-x-1/2 items-center justify-around rounded-full px-2 lg:hidden">
-        {navItems.map((item) => {
+        {bottomNav.map((item) => {
           const active = item.exact ? pathname === item.to : pathname.startsWith(item.to);
           const Icon = item.icon;
           return (
@@ -167,7 +147,9 @@ export function AppShell() {
                 className={cn("size-5", active && "drop-shadow-sm")}
                 strokeWidth={active ? 2.4 : 1.8}
               />
-              <span className="text-[9px] font-bold uppercase tracking-tighter">{item.label}</span>
+              <span className="text-[9px] font-bold uppercase tracking-tighter">
+                {item.shortLabel ?? item.label}
+              </span>
               {active && <span className="absolute -bottom-1 size-1 rounded-full bg-primary" />}
             </Link>
           );
