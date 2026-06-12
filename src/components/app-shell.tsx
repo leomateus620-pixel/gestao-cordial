@@ -1,19 +1,11 @@
-import { Link, Outlet, useRouterState, useNavigate } from "@tanstack/react-router";
-import { Home, Inbox, Building2, Calendar, LayoutGrid } from "lucide-react";
+import { Link, Outlet, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { MeshBackground } from "./mesh-background";
 import { AgencySwitcher } from "./agency-switcher";
+import { MobileDrawer } from "./shared/mobile-drawer";
+import { NotificationBell } from "./shared/notification-bell";
+import { SidebarMenu } from "./shared/sidebar-menu";
 import { useSession } from "@/lib/auth-mock";
-import { cn } from "@/lib/utils";
-
-type NavItem = { to: string; label: string; icon: typeof Home; exact?: boolean };
-const navItems: NavItem[] = [
-  { to: "/", label: "Início", icon: Home, exact: true },
-  { to: "/atendimentos", label: "Atend.", icon: Inbox },
-  { to: "/imoveis", label: "Imóveis", icon: Building2 },
-  { to: "/agenda", label: "Agenda", icon: Calendar },
-  { to: "/mais", label: "Mais", icon: LayoutGrid },
-];
 
 export function AppShell() {
   const session = useSession();
@@ -31,22 +23,26 @@ export function AppShell() {
       <MeshBackground />
 
       <header className="sticky top-0 z-30 flex flex-col gap-3 px-5 pt-6 pb-3">
-        <div className="flex items-center justify-between">
-          <div className="flex min-w-0 flex-col">
-            <span className="text-[10px] font-bold uppercase tracking-[0.22em] text-primary">
-              Gestão Cordial
-            </span>
-            <h1 className="truncate text-xl font-semibold tracking-tight">
-              Olá, {session.nome}
-            </h1>
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex min-w-0 items-center gap-2">
+            <MobileDrawer pathname={pathname} />
+            <div className="min-w-0">
+              <span className="text-[10px] font-bold uppercase tracking-[0.22em] text-primary">
+                Gestão Cordial
+              </span>
+              <h1 className="truncate text-xl font-semibold tracking-tight">Olá, {session.nome}</h1>
+            </div>
           </div>
-          <Link
-            to="/mais"
-            className="glass-panel grid size-10 shrink-0 place-items-center rounded-full text-sm font-semibold text-primary"
-            aria-label="Perfil"
-          >
-            {session.iniciais}
-          </Link>
+          <div className="flex shrink-0 items-center gap-2">
+            <NotificationBell count={2} />
+            <Link
+              to="/mais"
+              className="glass-panel grid size-10 place-items-center rounded-full text-sm font-semibold text-primary"
+              aria-label="Perfil"
+            >
+              {session.iniciais}
+            </Link>
+          </div>
         </div>
         <AgencySwitcher />
       </header>
@@ -55,28 +51,7 @@ export function AppShell() {
         <Outlet />
       </main>
 
-      <nav className="fixed bottom-5 left-1/2 z-40 flex h-16 w-[calc(100%-2rem)] max-w-[448px] -translate-x-1/2 items-center justify-around rounded-full glass-panel-strong px-2">
-        {navItems.map((item) => {
-          const active = item.exact ? pathname === item.to : pathname.startsWith(item.to);
-          const Icon = item.icon;
-          return (
-            <Link
-              key={item.to}
-              to={item.to as never}
-              className={cn(
-                "flex flex-1 flex-col items-center justify-center gap-1 py-1 transition-colors",
-                active ? "text-primary" : "text-foreground/45",
-              )}
-            >
-              <Icon className={cn("size-5", active && "drop-shadow-sm")} strokeWidth={active ? 2.4 : 1.8} />
-              <span className="text-[9px] font-bold uppercase tracking-tighter">
-                {item.label}
-              </span>
-              {active && <span className="absolute -bottom-1 size-1 rounded-full bg-primary" />}
-            </Link>
-          );
-        })}
-      </nav>
+      <SidebarMenu pathname={pathname} />
     </div>
   );
 }
