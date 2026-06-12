@@ -1,8 +1,48 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { LogOut, Building2 } from "lucide-react";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import {
+  Users,
+  UserCog,
+  FileText,
+  Wallet,
+  BarChart3,
+  LogOut,
+  Building2,
+  Inbox,
+  Calendar,
+  KeyRound,
+  BadgeDollarSign,
+  Megaphone,
+  Cable,
+  Settings,
+} from "lucide-react";
 import { useSession, logout } from "@/lib/auth-mock";
-import { moduleItems } from "@/components/shared/module-menu";
-import { SidebarMenu } from "@/components/shared/sidebar-menu";
+
+const items = [
+  { to: "/atendimentos", label: "Atendimentos", desc: "Leads, visitas e propostas", icon: Inbox },
+  { to: "/imoveis", label: "Imóveis", desc: "Carteira completa", icon: Building2 },
+  { to: "/alugueis", label: "Aluguéis", desc: "Locações, contratos e atrasos", icon: KeyRound },
+  { to: "/vendas", label: "Vendas", desc: "VGV e oportunidades", icon: BadgeDollarSign },
+  { to: "/clientes", label: "Clientes", desc: "Cadastro e histórico", icon: Users },
+  { to: "/agenda", label: "Agenda", desc: "Visitas e compromissos", icon: Calendar },
+  { to: "/corretores", label: "Corretores", desc: "Equipe e performance", icon: UserCog },
+  { to: "/contratos", label: "Contratos", desc: "Vendas e aluguéis", icon: FileText },
+  { to: "/financeiro", label: "Financeiro", desc: "Receita e comissões", icon: Wallet },
+  { to: "/marketing", label: "Marketing", desc: "Campanhas e leads", icon: Megaphone },
+  {
+    to: "/documentos",
+    label: "Documentos",
+    desc: "Contratos, propostas e vistorias",
+    icon: FileText,
+  },
+  { to: "/integracoes", label: "Integrações", desc: "Conectores e sincronizações", icon: Cable },
+  {
+    to: "/configuracoes",
+    label: "Configurações",
+    desc: "Preferências operacionais",
+    icon: Settings,
+  },
+  { to: "/relatorios", label: "Relatórios", desc: "Indicadores e ranking", icon: BarChart3 },
+];
 
 export const Route = createFileRoute("/_app/mais")({
   head: () => ({ meta: [{ title: "Mais — Gestão Cordial" }] }),
@@ -34,11 +74,26 @@ function Page() {
         <h3 className="mb-2 px-1 text-[11px] font-bold uppercase tracking-wider text-foreground/55">
           Módulos
         </h3>
-        <SidebarMenu
-          pathname="/mais"
-          items={moduleItems.filter((item) => !item.primary)}
-          variant="list"
-        />
+        <div className="glass-panel divide-y divide-white/50 overflow-hidden rounded-3xl">
+          {items.map((i) => {
+            const Icon = i.icon;
+            return (
+              <Link
+                key={i.to}
+                to={i.to as never}
+                className="flex items-center gap-3 px-4 py-3.5 active:bg-white/50"
+              >
+                <div className="grid size-9 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary">
+                  <Icon className="size-4" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-medium">{i.label}</p>
+                  <p className="truncate text-[11px] text-foreground/55">{i.desc}</p>
+                </div>
+              </Link>
+            );
+          })}
+        </div>
       </section>
 
       <section className="mb-5">

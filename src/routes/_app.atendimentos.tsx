@@ -1,6 +1,16 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { Search } from "lucide-react";
+import {
+  CalendarPlus,
+  CheckCircle2,
+  Clock3,
+  History,
+  Link2,
+  Search,
+  UserPlus,
+  UserRoundCog,
+  XCircle,
+} from "lucide-react";
 import { useApp, useFiltered } from "@/store/app-store";
 import { StatusBadge } from "@/components/status-badge";
 import { Fab } from "@/components/fab";
@@ -8,7 +18,27 @@ import { NovoAtendimentoSheet } from "@/components/sheets/novo-atendimento";
 import { timeAgo } from "@/lib/format";
 import { EmptyState } from "@/components/shared/empty-state";
 
-const statuses = ["Todos", "Aberto", "Em visita", "Proposta", "Fechado", "Perdido"] as const;
+const statuses = [
+  "Todos",
+  "Novo",
+  "Em atendimento",
+  "Aguardando retorno",
+  "Visita agendada",
+  "Proposta enviada",
+  "Negociação",
+  "Fechado",
+  "Perdido",
+  "Arquivado",
+] as const;
+
+const actions = [
+  { label: "Transformar em cliente", icon: UserPlus },
+  { label: "Vincular corretor", icon: UserRoundCog },
+  { label: "Criar visita", icon: CalendarPlus },
+  { label: "Criar tarefa de retorno", icon: Clock3 },
+  { label: "Registrar histórico", icon: History },
+  { label: "Marcar motivo de perda", icon: XCircle },
+] as const;
 
 export const Route = createFileRoute("/_app/atendimentos")({
   head: () => ({ meta: [{ title: "Atendimentos — Gestão Cordial" }] }),
@@ -28,10 +58,17 @@ function Page() {
     return atendimentos.filter((a) => {
       if (filtro !== "Todos" && a.status !== filtro) return false;
       if (!q) return true;
+      const query = q.toLowerCase();
       const cli = clientes.find((c) => c.id === a.clienteId)?.nome.toLowerCase() ?? "";
-      return cli.includes(q.toLowerCase());
+      const im = imoveis.find((i) => i.id === a.imovelId)?.titulo.toLowerCase() ?? "";
+      return cli.includes(query) || im.includes(query) || a.status.toLowerCase().includes(query);
     });
-  }, [atendimentos, filtro, q, clientes]);
+  }, [atendimentos, filtro, q, clientes, imoveis]);
+
+  const totals = statuses.slice(1).map((status) => ({
+    status,
+    total: atendimentos.filter((a) => a.status === status).length,
+  }));
 
   return (
     <>
@@ -40,7 +77,7 @@ function Page() {
         <input
           value={q}
           onChange={(e) => setQ(e.target.value)}
-          placeholder="Buscar cliente..."
+          placeholder="Buscar cliente, imóvel ou status..."
           className="flex-1 bg-transparent text-sm outline-none placeholder:text-foreground/40"
         />
       </div>
@@ -62,7 +99,18 @@ function Page() {
         ))}
       </div>
 
-      <div className="space-y-2">
+      <div className="mb-4 grid grid-cols-3 gap-2 md:grid-cols-9">
+        {totals.map((item) => (
+          <div key={item.status} className="glass-panel rounded-2xl p-2 text-center">
+            <p className="text-base font-bold text-primary">{item.total}</p>
+            <p className="truncate text-[9px] font-semibold uppercase tracking-tighter text-foreground/50">
+              {item.status}
+            </p>
+          </div>
+        ))}
+      </div>
+
+      <div className="space-y-3">
         {list.map((a) => {
           const cli = clientes.find((c) => c.id === a.clienteId);
           const cor = corretores.find((c) => c.id === a.corretorId);
@@ -77,7 +125,9 @@ function Page() {
                   <div className="min-w-0">
                     <p className="truncate text-sm font-medium">{cli?.nome}</p>
                     <p className="truncate text-[11px] text-foreground/55">{im?.titulo}</p>
-                    <p className="mt-0.5 text-[10px] text-foreground/45">Corretor: {cor?.nome}</p>
+                    <p className="mt-0.5 text-[10px] text-foreground/45">
+                      Corretor: {cor?.nome} · Origem: {a.origem ?? "WhatsApp"}
+                    </p>
                   </div>
                 </div>
                 <div className="shrink-0 text-right">
@@ -91,6 +141,27 @@ function Page() {
                 <p className="mt-2 rounded-xl bg-white/40 p-2 text-[11px] text-foreground/65">
                   {a.observacoes}
                 </p>
+              )}
+              <div className="mt-3 grid grid-cols-2 gap-2 md:grid-cols-3">
+                {actions.map(({ label, icon: Icon }) => (
+                  <button
+                    key={label}
+                    className="flex items-center gap-1.5 rounded-xl bg-white/45 px-2 py-2 text-left text-[10px] font-semibold text-foreground/65 transition hover:bg-primary/10 hover:text-primary"
+                  >
+                    <Icon className="size-3.5" />
+                    <span>{label}</span>
+                  </button>
+                ))}
+              </div>
+              {a.status === "Perdido" && (
+                <div className="mt-2 flex items-center gap-1 rounded-xl bg-destructive/10 px-2 py-1.5 text-[10px] font-medium text-destructive">
+                  <Link2 className="size-3" /> Motivo: {a.motivoPerda ?? "Preço acima do orçamento"}
+                </div>
+              )}
+              {a.status === "Fechado" && (
+                <div className="mt-2 flex items-center gap-1 rounded-xl bg-emerald-500/10 px-2 py-1.5 text-[10px] font-medium text-emerald-700">
+                  <CheckCircle2 className="size-3" /> Cliente pronto para contrato e comissão.
+                </div>
               )}
             </div>
           );
