@@ -1598,7 +1598,7 @@ export type Documento = {
   imobiliaria: AgencyId;
 };
 
-export const documentosSeed: Documento[] = [
+export const documentosLegadoSeed: Documento[] = [
   {
     id: "doc1",
     entidade: "Imóvel",
@@ -1811,7 +1811,7 @@ export type CampanhaMarketing = {
   status: "Planejada" | "Ativa" | "Pausada" | "Encerrada";
 };
 
-export const campanhasMarketingSeed: CampanhaMarketing[] = [
+export const campanhasMarketingLegadoSeed: CampanhaMarketing[] = [
   {
     id: "mk1",
     nome: "Aluguéis até R$ 1.300",
@@ -1910,7 +1910,7 @@ export const projecoesFinanceirasSeed: ProjecaoFinanceira[] = [
   },
 ];
 
-export const receitaMensal = [
+export const receitaMensalLegado = [
   { mes: "Jan", vendas: 18, alugueis: 8 },
   { mes: "Fev", vendas: 24, alugueis: 10 },
   { mes: "Mar", vendas: 16, alugueis: 9 },
