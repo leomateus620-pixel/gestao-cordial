@@ -27,6 +27,9 @@ import { Route as AppClientesRouteImport } from './routes/_app.clientes'
 import { Route as AppAtendimentosRouteImport } from './routes/_app.atendimentos'
 import { Route as AppAlugueisRouteImport } from './routes/_app.alugueis'
 import { Route as AppAgendaRouteImport } from './routes/_app.agenda'
+import { Route as AppImoveisImovelIdRouteImport } from './routes/_app.imoveis.$imovelId'
+import { Route as AppContratosContratoIdRouteImport } from './routes/_app.contratos.$contratoId'
+import { Route as AppClientesClienteIdRouteImport } from './routes/_app.clientes.$clienteId'
 
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
@@ -117,6 +120,21 @@ const AppAgendaRoute = AppAgendaRouteImport.update({
   path: '/agenda',
   getParentRoute: () => AppRoute,
 } as any)
+const AppImoveisImovelIdRoute = AppImoveisImovelIdRouteImport.update({
+  id: '/$imovelId',
+  path: '/$imovelId',
+  getParentRoute: () => AppImoveisRoute,
+} as any)
+const AppContratosContratoIdRoute = AppContratosContratoIdRouteImport.update({
+  id: '/$contratoId',
+  path: '/$contratoId',
+  getParentRoute: () => AppContratosRoute,
+} as any)
+const AppClientesClienteIdRoute = AppClientesClienteIdRouteImport.update({
+  id: '/$clienteId',
+  path: '/$clienteId',
+  getParentRoute: () => AppClientesRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AppIndexRoute
@@ -155,6 +173,9 @@ export interface FileRoutesByTo {
   '/relatorios': typeof AppRelatoriosRoute
   '/vendas': typeof AppVendasRoute
   '/': typeof AppIndexRoute
+  '/clientes/$clienteId': typeof AppClientesClienteIdRoute
+  '/contratos/$contratoId': typeof AppContratosContratoIdRoute
+  '/imoveis/$imovelId': typeof AppImoveisImovelIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -176,6 +197,9 @@ export interface FileRoutesById {
   '/_app/relatorios': typeof AppRelatoriosRoute
   '/_app/vendas': typeof AppVendasRoute
   '/_app/': typeof AppIndexRoute
+  '/_app/clientes/$clienteId': typeof AppClientesClienteIdRoute
+  '/_app/contratos/$contratoId': typeof AppContratosContratoIdRoute
+  '/_app/imoveis/$imovelId': typeof AppImoveisImovelIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -216,6 +240,9 @@ export interface FileRouteTypes {
     | '/relatorios'
     | '/vendas'
     | '/'
+    | '/clientes/$clienteId'
+    | '/contratos/$contratoId'
+    | '/imoveis/$imovelId'
   id:
     | '__root__'
     | '/_app'
@@ -236,6 +263,9 @@ export interface FileRouteTypes {
     | '/_app/relatorios'
     | '/_app/vendas'
     | '/_app/'
+    | '/_app/clientes/$clienteId'
+    | '/_app/contratos/$contratoId'
+    | '/_app/imoveis/$imovelId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -371,8 +401,65 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAgendaRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/imoveis/$imovelId': {
+      id: '/_app/imoveis/$imovelId'
+      path: '/$imovelId'
+      fullPath: '/imoveis/$imovelId'
+      preLoaderRoute: typeof AppImoveisImovelIdRouteImport
+      parentRoute: typeof AppImoveisRoute
+    }
+    '/_app/contratos/$contratoId': {
+      id: '/_app/contratos/$contratoId'
+      path: '/$contratoId'
+      fullPath: '/contratos/$contratoId'
+      preLoaderRoute: typeof AppContratosContratoIdRouteImport
+      parentRoute: typeof AppContratosRoute
+    }
+    '/_app/clientes/$clienteId': {
+      id: '/_app/clientes/$clienteId'
+      path: '/$clienteId'
+      fullPath: '/clientes/$clienteId'
+      preLoaderRoute: typeof AppClientesClienteIdRouteImport
+      parentRoute: typeof AppClientesRoute
+    }
   }
 }
+
+interface AppClientesRouteChildren {
+  AppClientesClienteIdRoute: typeof AppClientesClienteIdRoute
+}
+
+const AppClientesRouteChildren: AppClientesRouteChildren = {
+  AppClientesClienteIdRoute: AppClientesClienteIdRoute,
+}
+
+const AppClientesRouteWithChildren = AppClientesRoute._addFileChildren(
+  AppClientesRouteChildren,
+)
+
+interface AppContratosRouteChildren {
+  AppContratosContratoIdRoute: typeof AppContratosContratoIdRoute
+}
+
+const AppContratosRouteChildren: AppContratosRouteChildren = {
+  AppContratosContratoIdRoute: AppContratosContratoIdRoute,
+}
+
+const AppContratosRouteWithChildren = AppContratosRoute._addFileChildren(
+  AppContratosRouteChildren,
+)
+
+interface AppImoveisRouteChildren {
+  AppImoveisImovelIdRoute: typeof AppImoveisImovelIdRoute
+}
+
+const AppImoveisRouteChildren: AppImoveisRouteChildren = {
+  AppImoveisImovelIdRoute: AppImoveisImovelIdRoute,
+}
+
+const AppImoveisRouteWithChildren = AppImoveisRoute._addFileChildren(
+  AppImoveisRouteChildren,
+)
 
 interface AppRouteChildren {
   AppAgendaRoute: typeof AppAgendaRoute

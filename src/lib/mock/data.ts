@@ -164,6 +164,11 @@ export type Cliente = {
   timeline?: ClienteTimeline[];
   imobiliaria: AgencyId;
   criadoEm: string;
+  origem?: "WhatsApp" | "Site" | "Indicação" | "Porta fria" | "Instagram";
+  documento?: string;
+  rendaMensal?: number;
+  preferenciaContato?: "WhatsApp" | "Telefone" | "E-mail";
+  observacoes?: string;
 };
 
 export const clientesSeed: Cliente[] = [
@@ -495,6 +500,14 @@ export type Imovel = {
   origemCaptacao?: OrigemLead;
   imobiliaria: AgencyId;
   foto: string;
+  fotos?: string[];
+  suites?: number;
+  vagas?: number;
+  condominio?: number;
+  iptu?: number;
+  proprietarioId?: string;
+  documentos?: string[];
+  descricao?: string;
 };
 
 export const imoveisSeed: Imovel[] = [
@@ -838,6 +851,11 @@ export type Atendimento = {
   motivoPerda?: string;
   observacoes: string;
   criadoEm: string;
+  origem?: "WhatsApp" | "Site" | "Indicação" | "Porta fria" | "Instagram";
+  prioridade?: "Baixa" | "Média" | "Alta";
+  proximoRetorno?: string;
+  motivoPerda?: string;
+  historico?: string[];
 };
 
 export const atendimentosSeed: Atendimento[] = [
@@ -1078,6 +1096,12 @@ export type Contrato = {
   inicio: string;
   fim: string;
   status: "Ativo" | "Pendente assinatura" | "Encerrado";
+  proprietarioId?: string;
+  documentos?: string[];
+  historico?: string[];
+  comissaoPercentual?: number;
+  sinal?: number;
+  diaVencimento?: number;
 };
 
 export const contratosSeed: Contrato[] = [
@@ -1157,6 +1181,9 @@ export type Compromisso = {
   imovelId?: string;
   corretorId: string;
   imobiliaria: AgencyId;
+  local?: string;
+  status?: "Agendado" | "Confirmado" | "Concluído" | "Cancelado";
+  observacoes?: string;
 };
 
 export const agendaSeed: Compromisso[] = [

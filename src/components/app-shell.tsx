@@ -41,7 +41,7 @@ export function AppShell() {
   if (!session) return null;
 
   return (
-    <div className="relative flex min-h-screen w-full font-sans text-foreground">
+    <div className="relative mx-auto flex min-h-screen w-full max-w-[1180px] flex-col font-sans text-foreground">
       <MeshBackground />
 
       <aside className="glass-panel-strong fixed inset-y-4 left-4 z-40 hidden w-72 flex-col overflow-hidden rounded-[2rem] border border-white/50 p-4 shadow-2xl shadow-primary/10 lg:flex">
