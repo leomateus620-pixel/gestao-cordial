@@ -12,6 +12,7 @@ import {
   LayoutGrid,
   Megaphone,
   Settings,
+  Star,
   UserCog,
   Users,
   Wallet,
@@ -59,6 +60,14 @@ export const moduleItems: ModuleItem[] = [
     icon: Building2,
     module: "imoveis",
     primary: true,
+  },
+  {
+    to: "/imoveis-destaque",
+    label: "Em Destaque",
+    shortLabel: "Destaque",
+    desc: "Imóveis selecionados",
+    icon: Star,
+    module: "imoveis",
   },
   {
     to: "/agenda",

@@ -18,6 +18,7 @@ import { Route as AppMarketingRouteImport } from './routes/_app.marketing'
 import { Route as AppMaisRouteImport } from './routes/_app.mais'
 import { Route as AppIntegracoesRouteImport } from './routes/_app.integracoes'
 import { Route as AppImoveisRouteImport } from './routes/_app.imoveis'
+import { Route as AppImoveisDestaqueRouteImport } from './routes/_app.imoveis-destaque'
 import { Route as AppFinanceiroRouteImport } from './routes/_app.financeiro'
 import { Route as AppDocumentosRouteImport } from './routes/_app.documentos'
 import { Route as AppCorretoresRouteImport } from './routes/_app.corretores'
@@ -73,6 +74,11 @@ const AppIntegracoesRoute = AppIntegracoesRouteImport.update({
 const AppImoveisRoute = AppImoveisRouteImport.update({
   id: '/imoveis',
   path: '/imoveis',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppImoveisDestaqueRoute = AppImoveisDestaqueRouteImport.update({
+  id: '/imoveis-destaque',
+  path: '/imoveis-destaque',
   getParentRoute: () => AppRoute,
 } as any)
 const AppFinanceiroRoute = AppFinanceiroRouteImport.update({
@@ -149,6 +155,7 @@ export interface FileRoutesByFullPath {
   '/documentos': typeof AppDocumentosRoute
   '/financeiro': typeof AppFinanceiroRoute
   '/imoveis': typeof AppImoveisRouteWithChildren
+  '/imoveis-destaque': typeof AppImoveisDestaqueRoute
   '/integracoes': typeof AppIntegracoesRoute
   '/mais': typeof AppMaisRoute
   '/marketing': typeof AppMarketingRoute
@@ -170,6 +177,7 @@ export interface FileRoutesByTo {
   '/documentos': typeof AppDocumentosRoute
   '/financeiro': typeof AppFinanceiroRoute
   '/imoveis': typeof AppImoveisRouteWithChildren
+  '/imoveis-destaque': typeof AppImoveisDestaqueRoute
   '/integracoes': typeof AppIntegracoesRoute
   '/mais': typeof AppMaisRoute
   '/marketing': typeof AppMarketingRoute
@@ -194,6 +202,7 @@ export interface FileRoutesById {
   '/_app/documentos': typeof AppDocumentosRoute
   '/_app/financeiro': typeof AppFinanceiroRoute
   '/_app/imoveis': typeof AppImoveisRouteWithChildren
+  '/_app/imoveis-destaque': typeof AppImoveisDestaqueRoute
   '/_app/integracoes': typeof AppIntegracoesRoute
   '/_app/mais': typeof AppMaisRoute
   '/_app/marketing': typeof AppMarketingRoute
@@ -219,6 +228,7 @@ export interface FileRouteTypes {
     | '/documentos'
     | '/financeiro'
     | '/imoveis'
+    | '/imoveis-destaque'
     | '/integracoes'
     | '/mais'
     | '/marketing'
@@ -240,6 +250,7 @@ export interface FileRouteTypes {
     | '/documentos'
     | '/financeiro'
     | '/imoveis'
+    | '/imoveis-destaque'
     | '/integracoes'
     | '/mais'
     | '/marketing'
@@ -263,6 +274,7 @@ export interface FileRouteTypes {
     | '/_app/documentos'
     | '/_app/financeiro'
     | '/_app/imoveis'
+    | '/_app/imoveis-destaque'
     | '/_app/integracoes'
     | '/_app/mais'
     | '/_app/marketing'
@@ -342,6 +354,13 @@ declare module '@tanstack/react-router' {
       path: '/imoveis'
       fullPath: '/imoveis'
       preLoaderRoute: typeof AppImoveisRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/imoveis-destaque': {
+      id: '/_app/imoveis-destaque'
+      path: '/imoveis-destaque'
+      fullPath: '/imoveis-destaque'
+      preLoaderRoute: typeof AppImoveisDestaqueRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/financeiro': {
@@ -478,6 +497,7 @@ interface AppRouteChildren {
   AppDocumentosRoute: typeof AppDocumentosRoute
   AppFinanceiroRoute: typeof AppFinanceiroRoute
   AppImoveisRoute: typeof AppImoveisRouteWithChildren
+  AppImoveisDestaqueRoute: typeof AppImoveisDestaqueRoute
   AppIntegracoesRoute: typeof AppIntegracoesRoute
   AppMaisRoute: typeof AppMaisRoute
   AppMarketingRoute: typeof AppMarketingRoute
@@ -497,6 +517,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppDocumentosRoute: AppDocumentosRoute,
   AppFinanceiroRoute: AppFinanceiroRoute,
   AppImoveisRoute: AppImoveisRouteWithChildren,
+  AppImoveisDestaqueRoute: AppImoveisDestaqueRoute,
   AppIntegracoesRoute: AppIntegracoesRoute,
   AppMaisRoute: AppMaisRoute,
   AppMarketingRoute: AppMarketingRoute,
