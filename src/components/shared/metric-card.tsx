@@ -9,8 +9,8 @@ type MetricAccent = "up" | "down" | "neutral";
 const toneClass: Record<MetricTone, string> = {
   default: "text-foreground",
   primary: "text-primary",
-  success: "text-emerald-700",
-  danger: "text-destructive",
+  success: "text-[color:var(--success)]",
+  danger: "text-[color:var(--danger)]",
 };
 
 export function MetricCard({
@@ -54,8 +54,8 @@ export function MetricCard({
           <span
             className={cn(
               "inline-flex items-center gap-0.5 font-mono text-[10px] font-medium",
-              accent === "up" && "text-emerald-600",
-              accent === "down" && "text-destructive",
+              accent === "up" && "text-[color:var(--success)]",
+              accent === "down" && "text-[color:var(--danger)]",
               accent === "neutral" && "text-foreground/40",
             )}
           >
