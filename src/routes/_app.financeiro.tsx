@@ -153,8 +153,8 @@ function Page() {
               Disponível em breve
             </span>
           </div>
-        </Link>
-      </PermissionGuard>
+        </div>
+      </section>
     </>
   );
 }
