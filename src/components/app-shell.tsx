@@ -142,7 +142,7 @@ export function AppShell() {
         </main>
       </div>
 
-      <nav className="glass-panel-strong fixed bottom-5 left-1/2 z-40 flex h-16 w-[calc(100%-2rem)] max-w-[448px] -translate-x-1/2 items-center justify-around rounded-full px-2 lg:hidden">
+      <nav className="bottom-nav-glass fixed bottom-5 left-1/2 z-40 flex h-16 w-[calc(100%-2rem)] max-w-[448px] -translate-x-1/2 items-center justify-around rounded-full px-2 lg:hidden">
         {bottomNav.map((item) => {
           const active = item.exact ? pathname === item.to : pathname.startsWith(item.to);
           const Icon = item.icon;
