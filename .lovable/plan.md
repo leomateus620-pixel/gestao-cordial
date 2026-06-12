@@ -1,160 +1,134 @@
 
-# Parte 1 — Base da identidade visual "Gestão Cordial"
+# Parte 2 — Aplicação da identidade visual nos módulos
 
-Reskin apenas visual sobre o código existente. Sem mudar rotas, lógica, store, mocks, framework ou estrutura de componentes. Mantém glassmorphism / 3D liquid glass.
+Continuação visual da Parte 1. Sem mudar lógica, rotas, store, mocks ou framework. Foco: gráficos, badges/status, dashboard hero, notificações e componentes compartilhados que ainda usam paleta antiga.
 
-## 1. Tokens globais (`src/styles.css`)
+## Estratégia
 
-Substituir a paleta terracotta atual pela nova paleta no `:root` (mantém formato oklch para compatibilidade com `@theme inline` já existente, mas adiciona também as variáveis hex semânticas pedidas).
+A maioria das telas (clientes, imóveis, contratos, vendas, aluguéis, agenda, corretores, documentos, integrações, configurações, marketing, relatórios, atendimentos, mais e detalhes) **já herda automaticamente** a nova identidade — usam `glass-panel`/`GlassCard`/`text-primary`/`bg-primary/*`/`<StatusBadge>`/`<MetricCard>`/`<Fab>`, todos remapeados na Parte 1.
 
-Adicionar no `:root`:
+Resta atualizar o que **não herda**:
+1. cores hardcoded de gráfico (`hsl(...)` literais)
+2. `StatusBadge` com paleta semântica explícita
+3. `NotificationBell` com pílula de prioridade nova + badge cobre
+4. `Fab` em cobre (ação comercial)
+5. dashboard: hero premium + bloco Cordial×Morar usando cores contextuais (sem repintar a tela)
+6. revisar 3-4 detalhes residuais (`text-amber-700`, `border-white/60`, etc.) onde a antiga paleta terracotta deixou rastro
 
-```
---system-primary / -dark / -light       (#1E647D / #174D61 / #5FAFC7)
---system-accent / -dark / -light        (#D9782D / #B95F20 / #F0A86D)
---system-graphite / -graphite-soft      (#171B21 / #2A3038)
---system-background / -surface / -border (#F5F1EB / #FBF8F4 / #E6DDD2)
---system-text / -muted / -soft
---cordial-primary / -dark / -light      (#2B7FA3 / #165B73 / #DCEFF5)
---morar-primary / -dark / -light        (#E07A2E / #B95F20 / #FBE4D1)
---success / --warning / --danger / --info / --neutral
-```
+## Mudanças por arquivo
 
-Remapear os tokens shadcn existentes (`--background`, `--foreground`, `--primary`, `--primary-foreground`, `--accent`, `--border`, `--ring`, `--destructive`, `--card`, `--muted`, `--secondary`) para os novos valores em oklch equivalentes — assim toda a UI shadcn (botões, inputs, badges, sheet, drawer) herda a nova paleta sem reescrever componente por componente.
+### 1. Paleta única de gráficos — novo `src/lib/chart-palette.ts`
 
-Adicionar tokens `--cordial` / `--morar` e expor via `@theme inline` como cores Tailwind (`bg-cordial`, `text-morar`, etc.) para uso contextual.
-
-## 2. Fundo geral
-
-Reescrever `MeshBackground` para usar os novos glows:
-- base linear-gradient areia → off-white → areia escura
-- glow azul-petróleo top-left
-- glow cobre/laranja top-right
-- glow âmbar suave centro
-
-Mantém o componente, só troca cores e posições.
-
-## 3. Utility classes (`src/styles.css`)
-
-Atualizar `@utility glass-panel` e `glass-panel-strong` para o novo padrão (raio maior implícito via uso, sombras grafite, highlight superior).
-
-Adicionar utilities novas:
-```
-@utility liquid-panel        — card glass premium
-@utility premium-card        — alias semântico
-@utility system-gradient     — gradient azul-petróleo → grafite
-@utility system-button       — botão primário azul-petróleo
-@utility accent-button       — botão cobre/laranja
-@utility context-cordial     — borda + acento azul Cordial
-@utility context-morar       — borda + acento laranja Morar
-@utility sidebar-glass       — fundo grafite glass
-@utility bottom-nav-glass    — fundo claro glass para bottom nav
-@utility status-badge        — base de badge semântico
+Constantes exportadas:
+```ts
+chartSystem   = "#1E647D"
+chartCordial  = "#2B7FA3"
+chartMorar    = "#E07A2E"
+chartGraphite = "#2A3038"
+chartMuted    = "#A0A6AD"
+chartSuccess  = "#2F9E68"
+chartWarning  = "#D6A437"
+chartDanger   = "#C94C4C"
+chartAccent   = "#D9782D"     // cobre
+pieSeries     = [Cordial, Morar, system, graphite, muted]
+gridStroke    = "rgba(23,27,33,0.06)"
+axisTick      = { fontSize: 10, fill: "#6B7280" }
+tooltipStyle  = { glass branco translúcido + border sistema + radius 12 + sombra suave }
 ```
 
-Nenhuma utility v3 `@layer utilities` — todas seguem `@utility` v4 (compat com regras tailwind4-authoring).
+### 2. `src/routes/_app.index.tsx` (dashboard)
 
-## 4. Login (`src/routes/login.tsx`)
+- importar `chart-palette`; remover `chartColors`/`pieColors` locais
+- Linhas/áreas/barras: Cordial → `chartCordial`, Morar → `chartMorar`, Total/Sistema/Receita → `chartSystem`, Comissão → `chartSuccess`, Em aberto → `chartDanger`
+- Pie de origem dos leads: `pieSeries`
+- `CartesianGrid stroke="rgba(80,40,20,0.06)"` → `gridStroke`
+- Bloco Cordial×Morar: cada card recebe acento contextual (`context-cordial`/`context-morar`), badge de conversão muda de cor por imobiliária
+- **Novo hero topo** (acima dos KPIs): card horizontal full-width com `system-gradient`, texto branco, título "Olá, {nome}", subtítulo, mini-resumo do dia (visitas hoje, atendimentos pendentes, contratos vencendo, previsão de entrada). Calcular tudo a partir de dados já presentes no componente — sem mudar `store`.
 
-Reskin visual apenas — `login()`, `useSession`, perfis demo, submit, redirect ficam idênticos.
+### 3. `src/routes/_app.financeiro.tsx`
 
-Mudanças:
-- fundo grafite profundo com glow azul-petróleo à esquerda e cobre à direita (variante escura do MeshBackground inline)
-- card central `glass-panel-strong` mais translúcido, borda clara, sombra profunda
-- título "Gestão Cordial" + subtítulo "Painel integrado de gestão imobiliária" + linha menor "Cordial Imóveis + Morar Imóveis"
-- inputs com visual glass (mantém estrutura `<input>` atual, ajusta classes)
-- botão primário com `system-button` (azul-petróleo)
-- texto de perfis demo mantido
+Substituir os 3 `hsl(18 55% 50%)` por `chartSystem` (receita prevista) e revisar paleta interna do AreaChart para usar `chartSuccess` (recebido), `chartWarning` (pendente), `chartDanger` (atrasado).
 
-## 5. AppShell (`src/components/app-shell.tsx`)
+### 4. `src/components/status-badge.tsx`
 
-Sem mudar estrutura nem rotas, ajustar classes:
-
-**Sidebar desktop:**
-- trocar `glass-panel-strong` por `sidebar-glass` (fundo grafite glass)
-- nome "Gestão Cordial" + subtítulo "Sistema Imobiliário"
-- rodapé pequeno "Cordial Imóveis + Morar Imóveis"
-- item ativo no `SidebarMenu` ganha indicador lateral azul-petróleo (ajuste em `src/components/sidebar-menu.tsx` — só classes)
-
-**Header desktop:** mantém estrutura, troca tokens de cor para sistema (azul-petróleo no eyebrow, cobre em hover de ações).
-
-**Header mobile:** mesma ideia, eyebrow azul-petróleo.
-
-**Bottom nav mobile:**
-- aplicar `bottom-nav-glass`
-- ícones grafite, ativo azul-petróleo
-- ponto/indicador ativo azul-petróleo, accent cobre só em ação principal (FAB já separado, não mexer aqui)
-
-**Drawer mobile (Sheet):** mesma família visual do sidebar mas em variante clara glass.
-
-## 6. AgencySwitcher (`src/components/agency-switcher.tsx`)
-
-Mantém a lógica (`useApp`, `setAgency`, 3 opções). Visual:
-- container `glass-panel` segmented com pill animada
-- "Todas" → pill `--system-primary`
-- "Cordial" → pill `--cordial-primary`
-- "Morar" → pill `--morar-primary`
-- texto branco no ativo, grafite no inativo
-
-## 7. Cards
-
-Atualizar **apenas o card base** + 1-2 cards de listagem para padronizar; o resto herda via `GlassCard`.
-
-- `src/components/shared/glass-card.tsx`: novo background `liquid-panel` (rgba 0.64 + blur 18px + borda 0.48 + sombra grafite + highlight superior + radius 24px). Variantes existentes preservadas.
-- `src/components/shared/metric-card.tsx`: círculo do ícone passa a usar token sistema; tones `success`/`danger` apontam para os novos semânticos.
-- `src/components/shared/property-card.tsx`: preço em azul-petróleo, badge finalidade neutro.
-- `client-card`, `broker-card`, `contract-card`, `financial-summary-card`: micro-ajuste de cor de detalhe (acento azul-petróleo), sem mudar layout.
-
-Acento contextual via classes utilitárias `context-cordial` / `context-morar` aplicado onde o card já recebe a imobiliária — nesta etapa apenas deixar as classes prontas; aplicação nos cards individuais por imobiliária fica para a etapa de dados.
-
-## 8. Botões
-
-Sem criar componente novo: o shadcn `Button` (já usado) herda do `--primary` remapeado. Para a variante "ação comercial" usar a nova utility `accent-button` aplicada via `className` nos pontos chave (novo atendimento, novo imóvel, etc.) — não trocar agora, só deixar a classe pronta + atualizar `LiquidButton` (`src/components/shared/liquid-button.tsx`):
-- `variant: terracotta` renomeado conceitualmente para "primária" (azul-petróleo) — mantém nome da variante por compatibilidade, só troca cores
-- adicionar `variant: accent` (cobre)
-
-## 9. Ícones
-
-Padronização leve no `SidebarMenu` (já usa lucide). Círculo de fundo do ícone ativo passa de terracotta para azul-petróleo; sem outras mudanças.
-
-## 10. Validação
-
-1. `bunx vite build` — corrigir qualquer erro
-2. Probe visual via curl `/login` e `/` para sanity
-3. Conferir que `routeTree.gen.ts` não foi tocado
-4. Conferir que nenhum arquivo de rota, store, mock ou sheet foi alterado em lógica
-
-## Arquivos a editar (lista final)
+Reescrever mapa com paleta semântica:
 
 ```
-src/styles.css                                       (tokens + utilities + glass)
-src/components/mesh-background.tsx                   (glows novos)
-src/routes/login.tsx                                 (reskin)
-src/components/app-shell.tsx                         (classes)
-src/components/sidebar-menu.tsx                      (cores ativo)
-src/components/agency-switcher.tsx                   (segmented premium)
-src/components/shared/glass-card.tsx                 (novo base)
-src/components/shared/metric-card.tsx                (tokens)
-src/components/shared/property-card.tsx              (preço azul)
-src/components/shared/client-card.tsx                (acento)
-src/components/shared/broker-card.tsx                (acento)
-src/components/shared/contract-card.tsx              (acento)
-src/components/shared/financial-summary-card.tsx     (acento)
-src/components/shared/liquid-button.tsx              (variante accent)
+Novo                 → info       (azul claro)
+Em atendimento       → systemPrimary
+Aguardando retorno   → warning    (âmbar)
+Visita agendada      → indigo/cinza azulado (manter)
+Proposta enviada     → accent     (cobre)
+Negociação           → morar/laranja queimado
+Fechado / Ativo / Pago / Disponível → success
+Perdido / Atrasado   → danger
+Arquivado / Encerrado / Vendido / Alugado → neutral
+Pendente assinatura / Pendente / Reservado → warning
 ```
 
-Nenhum arquivo deletado. Nenhuma rota tocada. Nenhuma lógica de negócio mudada.
+Implementar via tokens CSS já criados (`--success`, `--warning`, `--danger`, `--info`, `--neutral`, `--system-primary`, `--system-accent`, `--morar-primary`) com `style` inline para `background`/`color` (tom suave 14% opacidade no fundo + texto na cor cheia) — evita criar 9 classes Tailwind novas.
 
-## Detalhes técnicos
+### 5. `src/components/notification-bell.tsx`
 
-- Tailwind v4: tokens em `:root` + `@theme inline` mapeando para `--color-*` (padrão do template). Novas utilities via `@utility`, nunca `@layer utilities`.
-- Glass: usar apenas `backdrop-filter` (sem `-webkit-` manual — Lightning CSS prefixa).
-- Cores oklch para os tokens shadcn (mantém formato existente); cores hex apenas nas utilities customizadas onde rgba/gradientes são necessários.
-- Nada de remover `--cordial`/`--morar` antigos sem antes substituir referências — vou fazer remap, não delete.
+- contador no canto: vermelho → **cobre** (`var(--system-accent)`)
+- mapa `priorityTone`:
+  - alta → danger
+  - media → accent (cobre)
+  - baixa → info
+- painel: `premium-card` (mais alinhado à Parte 1)
+- ícone por tipo via `notificationLabels` (já existe) — sem mudar lógica
 
-## Fora desta etapa (Parte 2)
+### 6. `src/components/fab.tsx`
 
-- Aplicar `context-cordial`/`context-morar` por registro de imobiliária nos cards de listagem
-- Logo gráfica autoral
-- Dark mode revisado
-- Telas de módulos individuais (financeiro, imóveis, etc.) além do card base
+`bg-primary` → `accent-button` (cobre). É ação comercial.
+
+### 7. `src/components/section-header.tsx`
+
+Adicionar variante de header de página com `description?: string` opcional renderizada abaixo do título. Listing pages que ainda renderizam um `<h1>` manual ganham consistência sem refactor. **Não vou trocar todas** — só deixar a prop pronta. Telas que já têm header próprio ficam intactas.
+
+### 8. Ajustes pontuais residuais
+
+`rg "text-amber-|text-orange-|text-red-|bg-red-500|border-white/60"` nos componentes shared/route — trocar onde for trivialmente substituível por token semântico. Limite: apenas componentes shared + dashboard + financeiro nesta etapa (resto fica para uma faxina futura, não bloqueia visual).
+
+### 9. `src/components/shared/financial-summary-card.tsx`
+
+- `text-emerald-700` → `var(--success)`
+- `text-destructive` → `var(--danger)` (mantém o token shadcn que já remapeei)
+- `text-foreground/70` para saídas: ok
+
+### 10. `src/components/shared/metric-card.tsx`
+
+`success`/`danger` tones já mapeados via classes Tailwind. Trocar `text-emerald-700`/`text-emerald-600` por classes baseadas em token (`text-[color:var(--success)]`).
+
+## Validação
+
+1. `bunx vite build` — corrigir tipagens
+2. `rg "hsl\(18|hsl\(35|hsl\(160|hsl\(4 75"` — confirmar zero ocorrências residuais da paleta antiga
+3. `rg "chartColors|pieColors" src/` — confirmar uso apenas via `chart-palette.ts`
+4. Probe `/` e `/financeiro` via curl
+5. Verificar que `routeTree.gen.ts` não foi tocado
+
+## Arquivos a editar / criar
+
+```
+NEW  src/lib/chart-palette.ts
+EDIT src/components/status-badge.tsx
+EDIT src/components/notification-bell.tsx
+EDIT src/components/fab.tsx
+EDIT src/components/section-header.tsx
+EDIT src/components/shared/metric-card.tsx
+EDIT src/components/shared/financial-summary-card.tsx
+EDIT src/components/shared/empty-state.tsx        (apenas ajuste do círculo do ícone)
+EDIT src/routes/_app.index.tsx                    (hero + paleta gráfica + contexto)
+EDIT src/routes/_app.financeiro.tsx               (paleta gráfica)
+```
+
+Total: 9 arquivos editados, 1 novo. Nenhuma rota tocada, nenhuma lógica mudada, nenhum mock alterado.
+
+## Fora desta etapa (Parte 3, se necessário)
+
+- Logo gráfica autoral (símbolo)
+- Dark mode revisado para a nova paleta
+- Refactor visual profundo das telas de detalhe (cliente, imóvel, contrato) — já funcionam com a Parte 1
+- Aplicar `context-cordial`/`context-morar` automaticamente em cada card por `imobiliaria` (passa por mudança em vários cards de listagem — pode entrar em etapa dedicada)
+- Faxina geral de `text-emerald-*`/`text-amber-*` espalhados em todas as 21 rotas
