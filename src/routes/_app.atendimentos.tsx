@@ -16,6 +16,7 @@ import { StatusBadge } from "@/components/status-badge";
 import { Fab } from "@/components/fab";
 import { NovoAtendimentoSheet } from "@/components/sheets/novo-atendimento";
 import { timeAgo } from "@/lib/format";
+import { EmptyState } from "@/components/shared/empty-state";
 
 const statuses = [
   "Todos",
@@ -166,9 +167,10 @@ function Page() {
           );
         })}
         {list.length === 0 && (
-          <p className="glass-panel rounded-2xl p-6 text-center text-sm text-foreground/55">
-            Nenhum atendimento encontrado.
-          </p>
+          <EmptyState
+            title="Nenhum atendimento encontrado"
+            description="Ajuste a busca ou o status selecionado."
+          />
         )}
       </div>
 

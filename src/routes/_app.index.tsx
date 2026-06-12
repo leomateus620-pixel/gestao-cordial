@@ -20,6 +20,8 @@ import type { ReactNode } from "react";
 import { useState } from "react";
 import { SectionHeader } from "@/components/section-header";
 import { StatusBadge } from "@/components/status-badge";
+import { ChartCard } from "@/components/shared/chart-card";
+import { Timeline } from "@/components/shared/timeline";
 import { Fab } from "@/components/fab";
 import { useApp, useFiltered } from "@/store/app-store";
 import { brl, timeAgo } from "@/lib/format";

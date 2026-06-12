@@ -1,11 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { Bed, Maximize2 } from "lucide-react";
 import { useApp, useFiltered } from "@/store/app-store";
-import { StatusBadge } from "@/components/status-badge";
 import { Fab } from "@/components/fab";
 import { NovoImovelSheet } from "@/components/sheets/novo-imovel";
-import { brl } from "@/lib/format";
+import { PropertyCard } from "@/components/shared/property-card";
+import { EmptyState } from "@/components/shared/empty-state";
 
 const filters = ["Todos", "Venda", "Aluguel"] as const;
 
@@ -91,6 +90,12 @@ function Page() {
             </div>
           </Link>
         ))}
+        {list.length === 0 && (
+          <EmptyState
+            title="Nenhum imóvel encontrado"
+            description="Ajuste o filtro ou cadastre um novo imóvel."
+          />
+        )}
       </div>
 
       <Fab onClick={() => setOpen(true)} label="Novo imóvel" />

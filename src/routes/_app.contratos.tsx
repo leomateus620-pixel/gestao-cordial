@@ -1,8 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useApp, useFiltered } from "@/store/app-store";
-import { StatusBadge } from "@/components/status-badge";
-import { brl } from "@/lib/format";
+import { ContractCard } from "@/components/shared/contract-card";
+import { EmptyState } from "@/components/shared/empty-state";
 
 const tabs = ["Todos", "Venda", "Aluguel"] as const;
 
@@ -78,6 +78,12 @@ function Page() {
             </Link>
           );
         })}
+        {list.length === 0 && (
+          <EmptyState
+            title="Nenhum contrato encontrado"
+            description="Altere o filtro para visualizar outros contratos."
+          />
+        )}
       </div>
     </>
   );

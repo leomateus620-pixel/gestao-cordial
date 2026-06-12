@@ -1,10 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { Search, Phone, Mail } from "lucide-react";
+import { Search } from "lucide-react";
 import { useApp, useFiltered } from "@/store/app-store";
 import { Fab } from "@/components/fab";
 import { NovoClienteSheet } from "@/components/sheets/novo-cliente";
-import { brl } from "@/lib/format";
+import { ClientCard } from "@/components/shared/client-card";
+import { EmptyState } from "@/components/shared/empty-state";
 
 export const Route = createFileRoute("/_app/clientes")({
   head: () => ({ meta: [{ title: "Clientes — Gestão Cordial" }] }),
@@ -76,6 +77,12 @@ function Page() {
             )}
           </Link>
         ))}
+        {list.length === 0 && (
+          <EmptyState
+            title="Nenhum cliente encontrado"
+            description="Tente buscar por outro nome ou cadastre um novo cliente."
+          />
+        )}
       </div>
 
       <Fab onClick={() => setOpen(true)} label="Novo cliente" />
