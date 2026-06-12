@@ -2,20 +2,38 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import {
   agendaSeed,
+  alugueisSeed,
   atendimentosSeed,
+  campanhasMarketingSeed,
   clientesSeed,
   contratosSeed,
   corretoresSeed,
+  documentosSeed,
   imoveisSeed,
+  integracoesContaAzulSeed,
   lancamentosSeed,
+  notificacoesSeed,
+  permissoesSeed,
+  projecoesFinanceirasSeed,
+  usuariosSistemaSeed,
+  vendasSeed,
   type AgencyId,
+  type Aluguel,
   type Atendimento,
+  type CampanhaMarketing,
   type Cliente,
   type Compromisso,
   type Contrato,
   type Corretor,
+  type Documento,
   type Imovel,
+  type IntegracaoContaAzul,
   type Lancamento,
+  type Notificacao,
+  type Permissao,
+  type ProjecaoFinanceira,
+  type UsuarioSistema,
+  type Venda,
 } from "@/lib/mock/data";
 
 type AgencyFilter = AgencyId | "todas";
@@ -29,6 +47,15 @@ type State = {
   contratos: Contrato[];
   agenda: Compromisso[];
   lancamentos: Lancamento[];
+  alugueis: Aluguel[];
+  vendas: Venda[];
+  documentos: Documento[];
+  notificacoes: Notificacao[];
+  integracoesContaAzul: IntegracaoContaAzul[];
+  permissoes: Permissao[];
+  usuariosSistema: UsuarioSistema[];
+  campanhasMarketing: CampanhaMarketing[];
+  projecoesFinanceiras: ProjecaoFinanceira[];
   setAgency: (a: AgencyFilter) => void;
   addCliente: (c: Omit<Cliente, "id" | "iniciais" | "criadoEm">) => void;
   addImovel: (i: Omit<Imovel, "id">) => void;
@@ -54,6 +81,15 @@ export const useApp = create<State>()(
       contratos: contratosSeed,
       agenda: agendaSeed,
       lancamentos: lancamentosSeed,
+      alugueis: alugueisSeed,
+      vendas: vendasSeed,
+      documentos: documentosSeed,
+      notificacoes: notificacoesSeed,
+      integracoesContaAzul: integracoesContaAzulSeed,
+      permissoes: permissoesSeed,
+      usuariosSistema: usuariosSistemaSeed,
+      campanhasMarketing: campanhasMarketingSeed,
+      projecoesFinanceiras: projecoesFinanceirasSeed,
       setAgency: (agency) => set({ agency }),
       addCliente: (c) =>
         set((s) => ({
