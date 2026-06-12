@@ -1,89 +1,101 @@
-## Gestão Cordial — v1 (mobile-first, mock data)
+## Objetivo
+Limpar e consolidar o Gestão Cordial sem mudar identidade visual nem remover features. Foco: build verde, navegação única, store sem duplicidades, permissões cobrindo todos os módulos.
 
-App mobile premium em liquid glass terracotta para Ricardo e Bruna gerenciarem Cordial Imóveis e Morar Imóveis. Toda a v1 roda com dados mock em memória (sem backend), pronta para futura integração Conta Azul.
+## Diagnóstico
 
-### Identidade visual
-- Paleta terracotta executive da direção escolhida (background `hsl(30 30% 95%)`, primary `hsl(18 55% 50%)`, glass panels brancos translúcidos com blur)
-- Fontes: Inter + JetBrains Mono (números/KPIs), carregadas via `<link>` em `__root.tsx`
-- Background mesh animado (blobs terracotta + laranja com drift suave 20s)
-- Componente reutilizável `GlassPanel` (backdrop-blur, borda branca, sombra dupla interna)
-- Identidade unificada "Gestão Cordial" com selo de cor por imobiliária (Cordial = terracotta, Morar = âmbar)
+**Conflitos encontrados durante a leitura:**
 
-### Arquitetura de rotas (TanStack Start)
-```
-src/routes/
-  __root.tsx              shell + fontes + mesh bg + auth mock gate
-  login.tsx               login mockado (Ricardo / Bruna)
-  _app.tsx                layout autenticado: header + bottom nav + outlet
-  _app/index.tsx          Dashboard (KPIs, gráfico, destaques, atividade)
-  _app/atendimentos.tsx   lista + filtro + novo atendimento (sheet)
-  _app/clientes.tsx       lista + cadastro (sheet)
-  _app/imoveis.tsx        grid de cards + cadastro (sheet)
-  _app/corretores.tsx     lista da equipe + performance
-  _app/agenda.tsx         visitas/reuniões por dia
-  _app/contratos.tsx      vendas + aluguéis ativos, status
-  _app/financeiro.tsx     receita, comissões, inadimplência (gráficos)
-  _app/relatorios.tsx     visões consolidadas + futura Conta Azul (placeholder)
-  _app/mais.tsx           menu lateral mobile com todos os módulos
-```
-Bottom nav fixa: Início, Atendimentos, Imóveis, Agenda, Mais. Itens secundários (Clientes, Corretores, Contratos, Financeiro, Relatórios) acessíveis por "Mais" (drawer/sheet) e pelo FAB de ação rápida.
+1. `src/components/app-shell.tsx` — usa ícones não importados (`KeyRound`, `BadgeDollarSign`, `Users`, `UserCog`, `FileText`, `Wallet`, `Megaphone`, `Cable`, `Settings`, `BarChart3`) e os itens do menu não preenchem o campo `module` exigido por `NavItem`.
+2. **Duas listas de navegação concorrentes**: `src/components/sidebar-menu.tsx`, `src/components/shared/sidebar-menu.tsx` e `src/components/shared/module-menu.ts` — APIs diferentes, conjuntos diferentes de módulos, sem ligação com permissões.
+3. `src/components/permission-guard.tsx` (modules/permissions) e `src/components/shared/permission-guard.tsx` (`allowed`) — APIs incompatíveis convivendo.
+4. `src/lib/mock/permissions.ts` — `AppModule` não cobre `alugueis`, `vendas`, `marketing`, `documentos`, `configuracoes`; perfis não batem com a especificação.
+5. `src/store/app-store.ts` — imports duplicados (`campanhasMarketingSeed`, `documentosSeed`, type `CampanhaMarketing`), campos duplicados em `State` (`documentos`, `campanhasMarketing`) e inicializações duplicadas no `create()`.
+6. `src/components/notification-bell.tsx` — lê `state.notifications` e ações que não existem; store carrega `notificacoes` (tipo `Notificacao` do data.ts) e também tem `notificationsSeed` (tipo `AppNotification`). Duas fontes para a mesma coisa.
+7. `src/lib/mock/data.ts` — chaves duplicadas em seeds (`creci`, `telefone`, `email`, `interesse`, `orcamento`…), unions duplicadas em `Cliente.origem`, `Imovel.condominio/iptu/vagas/documentos`, e seeds órfãos já parcialmente removidos. Também há duas declarações `documentosSeed`, `campanhasMarketingSeed` e `receitaMensal` (a 2ª foi renomeada como paliativo — vamos consolidar).
+8. `src/routes/_app.index.tsx` — define localmente `MetricCard`, `ChartCard`, `FinancialSummaryCard` enquanto existem versões em `src/components/shared/`.
+9. `src/routes/_app.mais.tsx` — lista própria de módulos, sem filtragem de permissão.
+10. Sheets `novo-atendimento.tsx` e `novo-imovel.tsx` enviam tipos incompatíveis com `Atendimento.origem`, `Atendimento.historico` e `Imovel.documentos`.
 
-### Estado e dados mock
-- `src/lib/mock/` — datasets em TS: `imobiliarias.ts`, `clientes.ts`, `imoveis.ts`, `corretores.ts`, `atendimentos.ts`, `contratos.ts`, `agenda.ts`, `financeiro.ts`. Conteúdo realista em PT-BR (nomes, endereços SP/Bragança, valores R$).
-- `src/store/` — Zustand para estado de UI + mutações locais (criar atendimento, cliente, imóvel etc.). Persistência via `localStorage` para sobreviver reload.
-- Hook `useAgency()` com switcher Cordial / Morar / Todas filtrando todas as listas.
-- Auth mock em `src/lib/auth-mock.ts` (usuários hardcoded Ricardo e Bruna, sessão em localStorage).
+## Passos de correção
 
-### Telas — escopo v1
+### 1. Fonte única de módulos
+Reescrever `src/components/shared/module-menu.ts` como a única lista de módulos do app, com 15 entradas (Dashboard, Atendimentos, Clientes, Imóveis, Aluguéis, Vendas, Contratos, Corretores, Agenda, Financeiro, Relatórios, Marketing, Documentos, Integrações, Configurações). Cada item terá: `to`, `label`, `shortLabel`, `description`, `icon`, `module: AppModule`, `exact?`, `primary?` (5 itens primários para a bottom nav: Início, Atendimentos, Imóveis, Agenda, Mais).
 
-**Dashboard (`/`)**
-- Header: logo + switcher de imobiliária + avatar
-- Saudação contextual ("Olá, Ricardo")
-- 4 KPIs: Atendimentos hoje, Visitas agendadas, Contratos ativos, Receita do mês (com delta vs mês anterior)
-- Gráfico de barras 6 meses (Recharts) — Performance de Vendas
-- Carrossel horizontal "Imóveis em destaque" (3-5 cards)
-- Lista "Atendimentos recentes" (4 itens com avatar inicial, corretor, tempo)
-- FAB "+" abre sheet de novo atendimento
+Adicionar helper `getVisibleModules(session)` que filtra por `session.modules`.
 
-**Atendimentos** — lista filtrada por status (Aberto, Em visita, Proposta, Fechado, Perdido), busca, novo atendimento (sheet com cliente, imóvel, corretor, status, observações).
+### 2. Permissões alinhadas
+Em `src/lib/mock/permissions.ts`:
+- Estender `AppModule` para incluir `alugueis`, `vendas`, `marketing`, `documentos`, `configuracoes`.
+- Adicionar permissões correspondentes (`alugueis:read/write`, `vendas:read/write`, `marketing:read`, `documentos:read/write`, `configuracoes:manage`).
+- Atualizar roles conforme spec:
+  - **admin_owner**: tudo.
+  - **secretaria**: dashboard, atendimentos, clientes, imoveis, agenda, documentos, contratos (read).
+  - **corretor**: dashboard, atendimentos, clientes, imoveis, agenda, vendas, alugueis, contratos (read), comissão própria via `financeiro:read` filtrado na UI? Vamos manter sem `financeiro` no menu — comissão própria fica dentro da página de Corretores/Atendimentos.
+  - **financeiro_admin**: dashboard, financeiro, contratos, relatorios, integracoes, documentos, clientes (read), cobranças.
 
-**Clientes** — lista com busca, badge de tipo (Comprador/Locatário/Vendedor/Proprietário), cadastro em sheet (nome, telefone, email, interesse, orçamento).
+### 3. `AppShell` consolidado
+- Importar tudo de `module-menu.ts` (zero ícones soltos no arquivo).
+- `SidebarMenu` (lateral desktop e drawer mobile) e bottom nav passam a consumir a mesma fonte e respeitam `session.modules`.
+- Trocar o botão `Bell` placeholder do header desktop pelo `<NotificationBell />` real; adicionar também no header mobile.
+- Manter shell, mesh, glass-panels e layout atuais — só corrigir o que está quebrado.
 
-**Imóveis** — grid de cards com foto, preço, status chip, bairro; filtro Venda/Aluguel; cadastro (tipo, finalidade, endereço, valor, quartos, área, foto URL).
+### 4. Reduzir duplicidade de `SidebarMenu`
+- Manter **um** componente `SidebarMenu` em `src/components/sidebar-menu.tsx` (usa `module-menu.ts`, suporta `compact`, `onNavigate`, `variant?: "sidebar" | "list"`).
+- Deletar `src/components/shared/sidebar-menu.tsx` (e remover qualquer import dele — nenhum hoje além do próprio app-shell, que será atualizado).
 
-**Corretores** — cards com avatar, atendimentos do mês, contratos fechados, comissão acumulada.
+### 5. `PermissionGuard` único
+- Manter `src/components/permission-guard.tsx` (modules/permissions + fallback). Já é o que as rotas importam.
+- Deletar `src/components/shared/permission-guard.tsx`. Não há outros consumidores em rotas além de `_app.financeiro.tsx`, que continua usando a versão central.
 
-**Agenda** — visualização por dia, lista de compromissos com horário, cliente, imóvel, corretor; criar evento.
+### 6. Store sem duplicidades
+Em `src/store/app-store.ts`:
+- Limpar imports: cada símbolo entra **uma vez**.
+- Tipo `State`: remover campos duplicados; manter `documentos: DocumentoOperacional[]` e `campanhasMarketing: CampanhaMarketing[]` apenas uma vez; renomear `notificacoes` → `notifications: AppNotification[]` (fonte única vinda de `mock/notifications`).
+- Inicialização: remover linhas duplicadas; deixar uma única chave por campo.
+- Adicionar ações `markNotificationRead(id)` e `markAllNotificationsRead()` (alteram `notifications[].read`).
+- `useFiltered` continua igual.
 
-**Contratos** — abas Vendas / Aluguéis, lista com cliente, imóvel, valor, vigência, status (Ativo, Pendente assinatura, Encerrado).
+### 7. `NotificationBell`
+- Tipar `priorityTone` como `Record<NotificationPriority, string>` e indexar com cast seguro.
+- Tipar `notificationTone` (ícones por `NotificationType`) idem com `Record<NotificationType, string>`.
+- Consumir `notifications`, `markNotificationRead`, `markAllNotificationsRead` da store já corrigida.
 
-**Financeiro** — cards de receita do mês, comissões a pagar, inadimplência; gráfico de fluxo por mês; lista de lançamentos recentes; bloco "Conta Azul" como placeholder ("Integração disponível em breve").
+### 8. `mock/data.ts` — limpeza de tipos e seeds
+- `Cliente`: deixar apenas **uma** declaração de `origem` (a `OrigemLead`). Remover a segunda união literal.
+- `Imovel`: remover duplicatas de `condominio`, `iptu`, `vagas`, `documentos` no type. `documentos` deve permanecer como `ImovelDocumento[]`.
+- `Corretor`: nos seeds, remover a segunda chave `creci` em cada objeto (mantendo a CRECI-RS, mais coerente com Santa Rosa).
+- `Cliente` seeds (cl1 etc.): remover linhas duplicadas (`telefone`, `email`, `tipo`, `interesse`, `orcamento`); preservar os valores mais completos (Santa Rosa).
+- Remover o segundo bloco `documentosSeed`/`Documento` (linhas 1601–1640) e usar apenas `documentosSeed: DocumentoOperacional[]` da linha 1350. Atualizar `Notificacao`/`notificacoesSeed` legados: como o store passou a usar `AppNotification`, podemos remover `notificacoesSeed` e o type `Notificacao` daqui para não confundir; manter apenas se algum outro arquivo importar (nenhum hoje).
+- Deletar o sufixo `Legado` introduzido como paliativo (`documentosLegadoSeed`, `campanhasMarketingLegadoSeed`, `receitaMensalLegado`) — substituídos pelas declarações originais.
 
-**Relatórios** — visão consolidada: ranking de corretores, conversão de atendimentos, mix venda/aluguel, top bairros.
+### 9. Sheets
+- `novo-atendimento.tsx`: tipar `origem` como `OrigemLead` (importar do data.ts) e `historico: []` (array vazio em vez de `string[]`); a string “Atendimento criado pelo formulário” vai como `observacoes` quando não preenchida.
+- `novo-imovel.tsx`: mapear `documentos.split(',')` para `ImovelDocumento[]` (`{ id, nome, status: "Recebido" }`).
 
-**Mais (menu lateral mobile)** — sheet lateral com todos os módulos, perfil do usuário, alternar imobiliária, sair.
+### 10. `_app.index.tsx` — usar shared
+- Trocar `MetricCard`, `ChartCard`, `FinancialSummaryCard` locais pelas versões em `src/components/shared/`.
+- Adaptar props (a shared `ChartCard` usa `eyebrow`, não `subtitle` — usar `subtitle` como `eyebrow` ou reapresentar como `SectionHeader`).
+- Remover funções locais duplicadas.
 
-### Stack técnico
-- TanStack Start (já configurado) + Tailwind v4 com tokens da direção em `src/styles.css`
-- shadcn/ui: Sheet (formulários e menu lateral), Tabs, Badge, Button, Input, Select, Avatar, Card
-- Recharts para gráficos
-- lucide-react para ícones
-- Zustand + persist para estado mock
-- date-fns (pt-BR) para datas
+### 11. `_app.mais.tsx`
+- Substituir lista local por `getVisibleModules(session)` da fonte única e renderizar com o mesmo visual atual (glass panel + ícones).
 
-### Detalhes técnicos
-- Tokens da direção entram em `src/styles.css` via `@theme` + classe utilitária `.glass-panel` global
-- `__root.tsx` mantém `<Outlet />` e adiciona `<link>` Inter+JetBrains Mono no `head()`
-- Cada rota define `head()` com title PT-BR específico
-- Imagens dos imóveis: gerar 4-6 fotos de fachadas/interiores via image gen em `src/assets/properties/`
-- Mobile-first: viewport será setada para mobile na preview; layout responsivo (max-w em desktop centralizado com mesh visível ao redor)
+### 12. `_app.financeiro.tsx`
+- Re-envolver bloco "Integração Conta Azul" em `<PermissionGuard modules={["integracoes","financeiro"]}>` (a tag órfã foi simplificada no fix anterior; vamos restaurar a intenção correta).
 
-### Fora de escopo da v1
-- Backend real, autenticação Lovable Cloud, integração Conta Azul (placeholder visual apenas), upload de fotos, notificações push, multi-tenant real, RBAC. Tudo planejado para v2 quando aprovado.
+### 13. `routeTree.gen.ts`
+- É autogerado. Após criar/remover rotas (nenhuma rota nova nesta etapa), o plugin regenera. Verificar que todas as 15 páginas presentes em `src/routes/` continuam registradas após o build.
 
-### Entregáveis no fim desta build
-- App navegável com 10 telas funcionais
-- Cadastro funcional (em memória + localStorage) de atendimento, cliente, imóvel
-- Dashboard com KPIs e gráficos a partir do mock
-- Login mockado (Ricardo/Bruna) + logout
-- Visual fiel à direção Terracotta Executive
+### 14. Build + lint direcionado
+- Rodar `bun run build` até passar.
+- Rodar `bunx prettier --write` nos arquivos tocados.
+- Rodar `bunx eslint` nos arquivos tocados (relatar erros remanescentes, não corrigir fora do escopo).
+
+## Fora de escopo (não vou mexer)
+- Tokens visuais, mesh, glass utilities.
+- Backend real, Lovable Cloud, Conta Azul real.
+- Zustand/localStorage (mantido).
+- Erros de TS/prettier antigos em arquivos não tocados.
+
+## Entrega
+Resumo final no chat com: arquivos alterados, conflitos encontrados/resolvidos, resultado do `bun run build`, resultado do lint direcionado, pendências.
