@@ -712,3 +712,31 @@ function MiniStat({ label, value }: { label: string; value: number }) {
     </div>
   );
 }
+
+function HeroStat({
+  label,
+  value,
+  accent,
+}: {
+  label: string;
+  value: string;
+  accent?: boolean;
+}) {
+  return (
+    <div
+      className="rounded-2xl px-3 py-2.5"
+      style={{
+        background: accent ? "rgba(240,168,109,0.18)" : "rgba(255,255,255,0.08)",
+        border: "1px solid rgba(255,255,255,0.12)",
+      }}
+    >
+      <p
+        className="text-[9px] font-semibold uppercase tracking-wider"
+        style={{ color: accent ? "#f0a86d" : "rgba(255,255,255,0.6)" }}
+      >
+        {label}
+      </p>
+      <p className="mt-1 font-mono text-base font-bold text-white">{value}</p>
+    </div>
+  );
+}
