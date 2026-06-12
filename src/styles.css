@@ -68,29 +68,64 @@
 
 :root {
   --radius: 0.625rem;
-  /* Gestão Cordial — Terracotta Executive */
-  --background: oklch(0.96 0.018 60);
-  --foreground: oklch(0.25 0.04 35);
-  --card: oklch(1 0 0 / 0.55);
-  --card-foreground: oklch(0.25 0.04 35);
-  --popover: oklch(0.99 0.01 60);
-  --popover-foreground: oklch(0.25 0.04 35);
-  --primary: oklch(0.62 0.14 38);
-  --primary-foreground: oklch(0.99 0.005 60);
-  --secondary: oklch(0.92 0.02 60);
-  --secondary-foreground: oklch(0.25 0.04 35);
-  --muted: oklch(0.93 0.015 60);
-  --muted-foreground: oklch(0.5 0.03 40);
-  --accent: oklch(0.85 0.08 55);
-  --accent-foreground: oklch(0.25 0.04 35);
-  --destructive: oklch(0.6 0.22 27);
-  --destructive-foreground: oklch(0.99 0.005 60);
-  --border: oklch(0.88 0.02 50 / 0.6);
-  --input: oklch(0.9 0.015 50);
-  --ring: oklch(0.62 0.14 38);
-  --cordial: oklch(0.62 0.14 38);
-  --morar: oklch(0.72 0.13 75);
-  --success: oklch(0.62 0.14 155);
+  /* Gestão Cordial — Sistema Integrado (azul-petróleo + cobre + grafite + areia) */
+
+  /* Tokens autorais do sistema */
+  --system-primary: #1e647d;
+  --system-primary-dark: #174d61;
+  --system-primary-light: #5fafc7;
+  --system-accent: #d9782d;
+  --system-accent-dark: #b95f20;
+  --system-accent-light: #f0a86d;
+  --system-graphite: #171b21;
+  --system-graphite-soft: #2a3038;
+  --system-background: #f5f1eb;
+  --system-surface: #fbf8f4;
+  --system-surface-glass: rgba(255, 255, 255, 0.62);
+  --system-border: #e6ddd2;
+  --system-text: #1e2329;
+  --system-muted: #6b7280;
+  --system-soft: #8a8f98;
+
+  /* Contextos das imobiliárias (acentos) */
+  --cordial-primary: #2b7fa3;
+  --cordial-dark: #165b73;
+  --cordial-light: #dceff5;
+  --morar-primary: #e07a2e;
+  --morar-dark: #b95f20;
+  --morar-light: #fbe4d1;
+
+  /* Semânticos */
+  --success: #2f9e68;
+  --warning: #d6a437;
+  --danger: #c94c4c;
+  --info: #3b82a0;
+  --neutral: #8a8f98;
+
+  /* shadcn tokens remapeados para a nova paleta (oklch) */
+  --background: oklch(0.95 0.012 70);
+  --foreground: oklch(0.25 0.012 250);
+  --card: oklch(1 0 0 / 0.62);
+  --card-foreground: oklch(0.25 0.012 250);
+  --popover: oklch(0.98 0.008 70);
+  --popover-foreground: oklch(0.25 0.012 250);
+  --primary: oklch(0.48 0.07 230);
+  --primary-foreground: oklch(0.99 0.003 70);
+  --secondary: oklch(0.92 0.012 70);
+  --secondary-foreground: oklch(0.25 0.012 250);
+  --muted: oklch(0.93 0.01 70);
+  --muted-foreground: oklch(0.5 0.012 250);
+  --accent: oklch(0.65 0.15 50);
+  --accent-foreground: oklch(0.99 0.003 70);
+  --destructive: oklch(0.6 0.18 22);
+  --destructive-foreground: oklch(0.99 0.003 70);
+  --border: oklch(0.88 0.014 60 / 0.6);
+  --input: oklch(0.9 0.012 60);
+  --ring: oklch(0.48 0.07 230);
+
+  /* Aliases legados (preservar referências antigas se houver) */
+  --cordial: var(--cordial-primary);
+  --morar: var(--morar-primary);
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
@@ -155,23 +190,102 @@
 }
 
 @utility glass-panel {
-  background: hsla(0, 0%, 100%, 0.45);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  border: 1px solid hsla(0, 0%, 100%, 0.6);
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(18px) saturate(140%);
+  border: 1px solid rgba(255, 255, 255, 0.55);
   box-shadow:
-    0 4px 24px -2px rgba(80, 40, 20, 0.08),
-    inset 0 1px 1px rgba(255, 255, 255, 0.9);
+    0 10px 30px -8px rgba(23, 27, 33, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7);
 }
 
 @utility glass-panel-strong {
-  background: hsla(0, 0%, 100%, 0.7);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid hsla(0, 0%, 100%, 0.7);
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(26px) saturate(150%);
+  border: 1px solid rgba(255, 255, 255, 0.65);
   box-shadow:
-    0 8px 32px -4px rgba(80, 40, 20, 0.12),
-    inset 0 1px 1px rgba(255, 255, 255, 1);
+    0 18px 50px -10px rgba(23, 27, 33, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
+}
+
+@utility liquid-panel {
+  background: rgba(255, 255, 255, 0.64);
+  backdrop-filter: blur(20px) saturate(145%);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 24px;
+  box-shadow:
+    0 18px 50px rgba(23, 27, 33, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+@utility premium-card {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.7) 0%,
+    rgba(255, 255, 255, 0.55) 100%
+  );
+  backdrop-filter: blur(22px) saturate(150%);
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  border-radius: 24px;
+  box-shadow:
+    0 22px 60px -16px rgba(23, 27, 33, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+@utility system-gradient {
+  background: linear-gradient(135deg, var(--system-primary), var(--system-graphite));
+}
+
+@utility system-button {
+  background: linear-gradient(135deg, var(--system-primary), var(--system-primary-dark));
+  color: #fff;
+  box-shadow: 0 10px 24px -8px rgba(30, 100, 125, 0.45);
+  transition: filter 0.2s ease, transform 0.15s ease;
+}
+
+@utility accent-button {
+  background: linear-gradient(135deg, var(--system-accent), var(--system-accent-dark));
+  color: #fff;
+  box-shadow: 0 10px 24px -8px rgba(217, 120, 45, 0.45);
+  transition: filter 0.2s ease, transform 0.15s ease;
+}
+
+@utility context-cordial {
+  border-left: 3px solid var(--cordial-primary);
+}
+
+@utility context-morar {
+  border-left: 3px solid var(--morar-primary);
+}
+
+@utility sidebar-glass {
+  background: linear-gradient(180deg, rgba(23, 27, 33, 0.96), rgba(30, 35, 41, 0.94));
+  backdrop-filter: blur(24px) saturate(140%);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow:
+    0 30px 60px -20px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.86);
+}
+
+@utility bottom-nav-glass {
+  background: rgba(255, 255, 255, 0.78);
+  backdrop-filter: blur(24px) saturate(150%);
+  border: 1px solid rgba(255, 255, 255, 0.65);
+  box-shadow:
+    0 18px 40px -12px rgba(23, 27, 33, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+@utility status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.125rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 @keyframes mesh-drift {

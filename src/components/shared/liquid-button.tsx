@@ -9,7 +9,9 @@ const liquidButtonVariants = cva(
     variants: {
       variant: {
         terracotta:
-          "bg-primary text-primary-foreground shadow-lg shadow-primary/25 hover:shadow-primary/35",
+          "system-button hover:brightness-110",
+        accent:
+          "accent-button hover:brightness-110",
         glass: "glass-panel text-primary hover:bg-white/60",
         subtle: "bg-primary/10 text-primary hover:bg-primary/15",
       },
