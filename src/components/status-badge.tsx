@@ -1,34 +1,56 @@
-import { cn } from "@/lib/utils";
+/**
+ * StatusBadge — paleta semântica.
+ * Empresa (Cordial/Morar) NÃO é status: use AgencyBadge se precisar.
+ */
 
-const map: Record<string, string> = {
-  Disponível: "bg-emerald-500/10 text-emerald-700",
-  Reservado: "bg-amber-500/15 text-amber-700",
-  Vendido: "bg-stone-400/20 text-stone-700",
-  Alugado: "bg-stone-400/20 text-stone-700",
-  Novo: "bg-sky-500/15 text-sky-700",
-  "Em atendimento": "bg-primary/15 text-primary",
-  "Aguardando retorno": "bg-violet-500/15 text-violet-700",
-  "Visita agendada": "bg-indigo-500/15 text-indigo-700",
-  "Proposta enviada": "bg-amber-500/15 text-amber-700",
-  Negociação: "bg-orange-500/15 text-orange-700",
-  Arquivado: "bg-stone-400/20 text-stone-600",
-  Fechado: "bg-emerald-500/15 text-emerald-700",
-  Perdido: "bg-stone-400/20 text-stone-600",
-  Ativo: "bg-emerald-500/15 text-emerald-700",
-  "Pendente assinatura": "bg-amber-500/15 text-amber-700",
-  Encerrado: "bg-stone-400/20 text-stone-700",
-  Pago: "bg-emerald-500/15 text-emerald-700",
-  Pendente: "bg-amber-500/15 text-amber-700",
-  Atrasado: "bg-destructive/15 text-destructive",
+type Tone = {
+  bg: string;
+  fg: string;
+};
+
+const SUCCESS: Tone = { bg: "rgba(47,158,104,0.14)", fg: "#1f7a4d" };
+const WARNING: Tone = { bg: "rgba(214,164,55,0.16)", fg: "#8a6a14" };
+const DANGER: Tone = { bg: "rgba(201,76,76,0.14)", fg: "#a83838" };
+const INFO: Tone = { bg: "rgba(59,130,160,0.14)", fg: "#235f7a" };
+const NEUTRAL: Tone = { bg: "rgba(138,143,152,0.18)", fg: "#5a5f68" };
+const SYSTEM: Tone = { bg: "rgba(30,100,125,0.14)", fg: "#174d61" };
+const ACCENT: Tone = { bg: "rgba(217,120,45,0.16)", fg: "#9a4f17" };
+const MORAR: Tone = { bg: "rgba(224,122,46,0.16)", fg: "#9a4f17" };
+const INDIGO: Tone = { bg: "rgba(99,102,180,0.14)", fg: "#3b3f7a" };
+
+const map: Record<string, Tone> = {
+  // Imóveis
+  Disponível: SUCCESS,
+  Reservado: WARNING,
+  Vendido: NEUTRAL,
+  Alugado: NEUTRAL,
+  // Atendimentos / funil
+  Novo: INFO,
+  "Em atendimento": SYSTEM,
+  "Aguardando retorno": WARNING,
+  "Visita agendada": INDIGO,
+  "Proposta enviada": ACCENT,
+  Negociação: MORAR,
+  Proposta: ACCENT,
+  Arquivado: NEUTRAL,
+  Fechado: SUCCESS,
+  Perdido: DANGER,
+  // Contratos
+  Ativo: SUCCESS,
+  "Pendente assinatura": WARNING,
+  Encerrado: NEUTRAL,
+  // Financeiro
+  Pago: SUCCESS,
+  Pendente: WARNING,
+  Atrasado: DANGER,
 };
 
 export function StatusBadge({ status }: { status: string }) {
+  const tone = map[status] ?? NEUTRAL;
   return (
     <span
-      className={cn(
-        "rounded-full px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider",
-        map[status] ?? "bg-foreground/10 text-foreground/60",
-      )}
+      className="inline-flex items-center rounded-full px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider"
+      style={{ background: tone.bg, color: tone.fg }}
     >
       {status}
     </span>

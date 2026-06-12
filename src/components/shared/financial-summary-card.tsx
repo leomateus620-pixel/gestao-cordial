@@ -36,7 +36,7 @@ export function FinancialSummaryCard({
           icon={<ArrowUpRight className="size-3" />}
           label="Entradas"
           value={entradas}
-          tone="text-emerald-700"
+          tone="text-[color:var(--success)]"
         />
         <SummaryPill
           icon={<ArrowDownLeft className="size-3" />}
@@ -44,7 +44,7 @@ export function FinancialSummaryCard({
           value={saidas}
           tone="text-foreground/70"
         />
-        <SummaryPill label="Pend." value={pendente} tone="text-destructive" />
+        <SummaryPill label="Pend." value={pendente} tone="text-[color:var(--danger)]" />
       </div>
       {footer && (
         <div className="mt-4 border-t border-white/40 pt-3 text-[11px] text-foreground/60">
