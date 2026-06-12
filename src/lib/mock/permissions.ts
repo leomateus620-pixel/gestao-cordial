@@ -5,12 +5,17 @@ export type AppModule =
   | "clientes"
   | "atendimentos"
   | "imoveis"
+  | "alugueis"
+  | "vendas"
   | "agenda"
   | "corretores"
   | "contratos"
   | "financeiro"
   | "relatorios"
-  | "integracoes";
+  | "marketing"
+  | "documentos"
+  | "integracoes"
+  | "configuracoes";
 
 export type Permission =
   | "clientes:read"
@@ -19,6 +24,10 @@ export type Permission =
   | "atendimentos:write"
   | "imoveis:read"
   | "imoveis:write"
+  | "alugueis:read"
+  | "alugueis:write"
+  | "vendas:read"
+  | "vendas:write"
   | "agenda:read"
   | "agenda:write"
   | "corretores:read"
@@ -28,8 +37,13 @@ export type Permission =
   | "financeiro:read"
   | "financeiro:write"
   | "relatorios:read"
+  | "marketing:read"
+  | "marketing:write"
+  | "documentos:read"
+  | "documentos:write"
   | "integracoes:read"
-  | "integracoes:manage";
+  | "integracoes:manage"
+  | "configuracoes:manage";
 
 export type RoleDefinition = {
   profile: UserProfile;
@@ -44,12 +58,17 @@ const allModules: AppModule[] = [
   "clientes",
   "atendimentos",
   "imoveis",
+  "alugueis",
+  "vendas",
   "agenda",
   "corretores",
   "contratos",
   "financeiro",
   "relatorios",
+  "marketing",
+  "documentos",
   "integracoes",
+  "configuracoes",
 ];
 
 const allPermissions: Permission[] = [
@@ -59,6 +78,10 @@ const allPermissions: Permission[] = [
   "atendimentos:write",
   "imoveis:read",
   "imoveis:write",
+  "alugueis:read",
+  "alugueis:write",
+  "vendas:read",
+  "vendas:write",
   "agenda:read",
   "agenda:write",
   "corretores:read",
@@ -68,8 +91,13 @@ const allPermissions: Permission[] = [
   "financeiro:read",
   "financeiro:write",
   "relatorios:read",
+  "marketing:read",
+  "marketing:write",
+  "documentos:read",
+  "documentos:write",
   "integracoes:read",
   "integracoes:manage",
+  "configuracoes:manage",
 ];
 
 export const roleDefinitions: Record<UserProfile, RoleDefinition> = {
@@ -84,7 +112,15 @@ export const roleDefinitions: Record<UserProfile, RoleDefinition> = {
     profile: "secretaria",
     label: "Secretária",
     description: "Atendimento, agenda, clientes e imóveis sem permissões financeiras sensíveis.",
-    modules: ["dashboard", "clientes", "atendimentos", "imoveis", "agenda", "contratos"],
+    modules: [
+      "dashboard",
+      "atendimentos",
+      "clientes",
+      "imoveis",
+      "agenda",
+      "documentos",
+      "contratos",
+    ],
     permissions: [
       "clientes:read",
       "clientes:write",
@@ -93,6 +129,8 @@ export const roleDefinitions: Record<UserProfile, RoleDefinition> = {
       "imoveis:read",
       "agenda:read",
       "agenda:write",
+      "documentos:read",
+      "documentos:write",
       "contratos:read",
     ],
   },
@@ -100,7 +138,16 @@ export const roleDefinitions: Record<UserProfile, RoleDefinition> = {
     profile: "corretor",
     label: "Corretor",
     description: "Carteira comercial, visitas, propostas e acompanhamento do funil.",
-    modules: ["dashboard", "clientes", "atendimentos", "imoveis", "agenda", "contratos"],
+    modules: [
+      "dashboard",
+      "atendimentos",
+      "clientes",
+      "imoveis",
+      "agenda",
+      "vendas",
+      "alugueis",
+      "contratos",
+    ],
     permissions: [
       "clientes:read",
       "atendimentos:read",
@@ -108,6 +155,10 @@ export const roleDefinitions: Record<UserProfile, RoleDefinition> = {
       "imoveis:read",
       "agenda:read",
       "agenda:write",
+      "vendas:read",
+      "vendas:write",
+      "alugueis:read",
+      "alugueis:write",
       "contratos:read",
     ],
   },
@@ -115,7 +166,15 @@ export const roleDefinitions: Record<UserProfile, RoleDefinition> = {
     profile: "financeiro_admin",
     label: "Financeiro/Administrativo",
     description: "Contratos, cobranças, comissões, relatórios e integração contábil mockada.",
-    modules: ["dashboard", "clientes", "contratos", "financeiro", "relatorios", "integracoes"],
+    modules: [
+      "dashboard",
+      "clientes",
+      "contratos",
+      "financeiro",
+      "relatorios",
+      "documentos",
+      "integracoes",
+    ],
     permissions: [
       "clientes:read",
       "contratos:read",
@@ -123,6 +182,8 @@ export const roleDefinitions: Record<UserProfile, RoleDefinition> = {
       "financeiro:read",
       "financeiro:write",
       "relatorios:read",
+      "documentos:read",
+      "documentos:write",
       "integracoes:read",
       "integracoes:manage",
     ],
