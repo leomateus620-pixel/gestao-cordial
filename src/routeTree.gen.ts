@@ -142,31 +142,34 @@ export interface FileRoutesByFullPath {
   '/agenda': typeof AppAgendaRoute
   '/alugueis': typeof AppAlugueisRoute
   '/atendimentos': typeof AppAtendimentosRoute
-  '/clientes': typeof AppClientesRoute
+  '/clientes': typeof AppClientesRouteWithChildren
   '/configuracoes': typeof AppConfiguracoesRoute
-  '/contratos': typeof AppContratosRoute
+  '/contratos': typeof AppContratosRouteWithChildren
   '/corretores': typeof AppCorretoresRoute
   '/documentos': typeof AppDocumentosRoute
   '/financeiro': typeof AppFinanceiroRoute
-  '/imoveis': typeof AppImoveisRoute
+  '/imoveis': typeof AppImoveisRouteWithChildren
   '/integracoes': typeof AppIntegracoesRoute
   '/mais': typeof AppMaisRoute
   '/marketing': typeof AppMarketingRoute
   '/relatorios': typeof AppRelatoriosRoute
   '/vendas': typeof AppVendasRoute
+  '/clientes/$clienteId': typeof AppClientesClienteIdRoute
+  '/contratos/$contratoId': typeof AppContratosContratoIdRoute
+  '/imoveis/$imovelId': typeof AppImoveisImovelIdRoute
 }
 export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/agenda': typeof AppAgendaRoute
   '/alugueis': typeof AppAlugueisRoute
   '/atendimentos': typeof AppAtendimentosRoute
-  '/clientes': typeof AppClientesRoute
+  '/clientes': typeof AppClientesRouteWithChildren
   '/configuracoes': typeof AppConfiguracoesRoute
-  '/contratos': typeof AppContratosRoute
+  '/contratos': typeof AppContratosRouteWithChildren
   '/corretores': typeof AppCorretoresRoute
   '/documentos': typeof AppDocumentosRoute
   '/financeiro': typeof AppFinanceiroRoute
-  '/imoveis': typeof AppImoveisRoute
+  '/imoveis': typeof AppImoveisRouteWithChildren
   '/integracoes': typeof AppIntegracoesRoute
   '/mais': typeof AppMaisRoute
   '/marketing': typeof AppMarketingRoute
@@ -184,13 +187,13 @@ export interface FileRoutesById {
   '/_app/agenda': typeof AppAgendaRoute
   '/_app/alugueis': typeof AppAlugueisRoute
   '/_app/atendimentos': typeof AppAtendimentosRoute
-  '/_app/clientes': typeof AppClientesRoute
+  '/_app/clientes': typeof AppClientesRouteWithChildren
   '/_app/configuracoes': typeof AppConfiguracoesRoute
-  '/_app/contratos': typeof AppContratosRoute
+  '/_app/contratos': typeof AppContratosRouteWithChildren
   '/_app/corretores': typeof AppCorretoresRoute
   '/_app/documentos': typeof AppDocumentosRoute
   '/_app/financeiro': typeof AppFinanceiroRoute
-  '/_app/imoveis': typeof AppImoveisRoute
+  '/_app/imoveis': typeof AppImoveisRouteWithChildren
   '/_app/integracoes': typeof AppIntegracoesRoute
   '/_app/mais': typeof AppMaisRoute
   '/_app/marketing': typeof AppMarketingRoute
@@ -221,6 +224,9 @@ export interface FileRouteTypes {
     | '/marketing'
     | '/relatorios'
     | '/vendas'
+    | '/clientes/$clienteId'
+    | '/contratos/$contratoId'
+    | '/imoveis/$imovelId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/login'
@@ -465,13 +471,13 @@ interface AppRouteChildren {
   AppAgendaRoute: typeof AppAgendaRoute
   AppAlugueisRoute: typeof AppAlugueisRoute
   AppAtendimentosRoute: typeof AppAtendimentosRoute
-  AppClientesRoute: typeof AppClientesRoute
+  AppClientesRoute: typeof AppClientesRouteWithChildren
   AppConfiguracoesRoute: typeof AppConfiguracoesRoute
-  AppContratosRoute: typeof AppContratosRoute
+  AppContratosRoute: typeof AppContratosRouteWithChildren
   AppCorretoresRoute: typeof AppCorretoresRoute
   AppDocumentosRoute: typeof AppDocumentosRoute
   AppFinanceiroRoute: typeof AppFinanceiroRoute
-  AppImoveisRoute: typeof AppImoveisRoute
+  AppImoveisRoute: typeof AppImoveisRouteWithChildren
   AppIntegracoesRoute: typeof AppIntegracoesRoute
   AppMaisRoute: typeof AppMaisRoute
   AppMarketingRoute: typeof AppMarketingRoute
@@ -484,13 +490,13 @@ const AppRouteChildren: AppRouteChildren = {
   AppAgendaRoute: AppAgendaRoute,
   AppAlugueisRoute: AppAlugueisRoute,
   AppAtendimentosRoute: AppAtendimentosRoute,
-  AppClientesRoute: AppClientesRoute,
+  AppClientesRoute: AppClientesRouteWithChildren,
   AppConfiguracoesRoute: AppConfiguracoesRoute,
-  AppContratosRoute: AppContratosRoute,
+  AppContratosRoute: AppContratosRouteWithChildren,
   AppCorretoresRoute: AppCorretoresRoute,
   AppDocumentosRoute: AppDocumentosRoute,
   AppFinanceiroRoute: AppFinanceiroRoute,
-  AppImoveisRoute: AppImoveisRoute,
+  AppImoveisRoute: AppImoveisRouteWithChildren,
   AppIntegracoesRoute: AppIntegracoesRoute,
   AppMaisRoute: AppMaisRoute,
   AppMarketingRoute: AppMarketingRoute,

@@ -727,36 +727,6 @@ export const imoveisSeed: Imovel[] = [
     imobiliaria: "morar",
     foto: casaVilaNova,
   },
-    codigoInterno: "MOR-SR-0010",
-    titulo: "Casa Glória para Locação",
-    endereco: "Rua das Hortênsias, 145",
-    bairro: "Glória",
-    cidade: "Santa Rosa/RS",
-    tipo: "Casa",
-    finalidade: "Aluguel",
-    valor: 1250,
-    valorVenda: 0,
-    valorAluguel: 1250,
-    condominio: 0,
-    iptu: 75,
-    quartos: 2,
-    dormitorios: 2,
-    banheiros: 1,
-    vagas: 1,
-    area: 88,
-    areaPrivativa: 74,
-    areaTotal: 180,
-    proprietario: { id: "prop-6", nome: "Marta Kist", telefone: "(55) 99612-3344" },
-    corretorId: "c4",
-    status: "Alugado",
-    documentos: [
-      { id: "doc-im6-1", nome: "Contrato de locação", status: "Aprovado" },
-      { id: "doc-im6-2", nome: "Vistoria de entrada", status: "Recebido" },
-    ],
-    origemCaptacao: "Portal imobiliário",
-    imobiliaria: "morar",
-    foto: casaVilaNova,
-  },
   {
     id: "im7",
     codigoInterno: "CRD-SR-0011",
@@ -1013,37 +983,6 @@ export const atendimentosSeed: Atendimento[] = [
     corretorId: "c4",
     imobiliaria: "morar",
     status: "Em visita",
-    observacoes: "Aguardando confirmação do cliente",
-    criadoEm: "2026-06-11T08:45:00",
-  },
-    imovelId: "im8",
-    corretorId: "c4",
-    telefone: "(55) 94444-3333",
-    whatsapp: "(55) 94444-3333",
-    origem: "Google Ads",
-    data: "2026-06-11T08:45:00",
-    imobiliaria: "morar",
-    responsavel: "Camila Reis",
-    interesse: "Comprar",
-    tipoImovel: "Terreno",
-    faixaValor: { minimo: 300000, maximo: 350000 },
-    bairro: "Auxiliadora",
-    dormitorios: 0,
-    garagem: false,
-    patio: true,
-    salaComercial: false,
-    apartamento: false,
-    casa: false,
-    terreno: true,
-    urgencia: "Baixa",
-    status: "Em visita",
-    historico: [
-      {
-        data: "2026-06-11T08:45:00",
-        descricao: "Aguardando confirmação do cliente para visita ao terreno.",
-        responsavelId: "c4",
-      },
-    ],
     observacoes: "Aguardando confirmação do cliente",
     criadoEm: "2026-06-11T08:45:00",
   },
@@ -1538,14 +1477,6 @@ export const configuracoesSeed: ConfiguracaoOperacional[] = [
     status: "Ativo",
     imobiliaria: "morar",
   },
-    descricao: "Despesa anúncio imóveis Santa Rosa",
-    categoria: "Despesa",
-    valor: 680,
-    data: "2026-05-28",
-    tipo: "saida",
-    imobiliaria: "morar",
-    status: "Atrasado",
-  },
 ];
 
 export type Aluguel = {
@@ -1667,7 +1598,7 @@ export type Documento = {
   imobiliaria: AgencyId;
 };
 
-export const documentosSeed: Documento[] = [
+export const documentosLegadoSeed: Documento[] = [
   {
     id: "doc1",
     entidade: "Imóvel",
@@ -1880,7 +1811,7 @@ export type CampanhaMarketing = {
   status: "Planejada" | "Ativa" | "Pausada" | "Encerrada";
 };
 
-export const campanhasMarketingSeed: CampanhaMarketing[] = [
+export const campanhasMarketingLegadoSeed: CampanhaMarketing[] = [
   {
     id: "mk1",
     nome: "Aluguéis até R$ 1.300",
@@ -1979,11 +1910,58 @@ export const projecoesFinanceirasSeed: ProjecaoFinanceira[] = [
   },
 ];
 
-export const receitaMensal = [
+export const receitaMensalLegado = [
   { mes: "Jan", vendas: 18, alugueis: 8 },
   { mes: "Fev", vendas: 24, alugueis: 10 },
   { mes: "Mar", vendas: 16, alugueis: 9 },
   { mes: "Abr", vendas: 32, alugueis: 12 },
   { mes: "Mai", vendas: 44, alugueis: 15 },
   { mes: "Jun", vendas: 61, alugueis: 18 },
+];
+
+export const dashboardComparativoCordialMorar = [
+  { imobiliaria: "Cordial", conversao: 28, atendimentos: 142, alugueis: 18, vendas: 9, receitaPrevista: 480000, origemContatos: "Instagram" },
+  { imobiliaria: "Morar", conversao: 22, atendimentos: 96, alugueis: 24, vendas: 4, receitaPrevista: 280000, origemContatos: "Indicação" },
+];
+
+export const dashboardEvolucaoMensal = [
+  { mes: "Jan", cordial: 42, morar: 28, total: 70 },
+  { mes: "Fev", cordial: 51, morar: 33, total: 84 },
+  { mes: "Mar", cordial: 38, morar: 30, total: 68 },
+  { mes: "Abr", cordial: 64, morar: 41, total: 105 },
+  { mes: "Mai", cordial: 72, morar: 48, total: 120 },
+  { mes: "Jun", cordial: 88, morar: 55, total: 143 },
+];
+
+export const dashboardOrigemLeads = [
+  { origem: "Instagram", total: 62, cordial: 38, morar: 24 },
+  { origem: "Indicação", total: 48, cordial: 22, morar: 26 },
+  { origem: "Site", total: 36, cordial: 20, morar: 16 },
+  { origem: "WhatsApp", total: 28, cordial: 16, morar: 12 },
+  { origem: "Portais", total: 22, cordial: 12, morar: 10 },
+];
+
+export const dashboardAluguelVenda = [
+  { mes: "Jan", venda: 6, aluguel: 12 },
+  { mes: "Fev", venda: 8, aluguel: 14 },
+  { mes: "Mar", venda: 5, aluguel: 11 },
+  { mes: "Abr", venda: 11, aluguel: 18 },
+  { mes: "Mai", venda: 14, aluguel: 21 },
+  { mes: "Jun", venda: 17, aluguel: 25 },
+];
+
+export const dashboardPrevisaoFinanceira = [
+  { mes: "Jan", receita: 320000, comissao: 28000, aberto: 42000 },
+  { mes: "Fev", receita: 380000, comissao: 32000, aberto: 38000 },
+  { mes: "Mar", receita: 290000, comissao: 24000, aberto: 51000 },
+  { mes: "Abr", receita: 460000, comissao: 41000, aberto: 33000 },
+  { mes: "Mai", receita: 540000, comissao: 48000, aberto: 28000 },
+  { mes: "Jun", receita: 620000, comissao: 56000, aberto: 22000 },
+];
+
+export const dashboardDesempenhoCorretores = [
+  { nome: "Ana Souza", imobiliaria: "cordial" as AgencyId, atendimentos: 48, contratos: 9 },
+  { nome: "Bruno Lima", imobiliaria: "cordial" as AgencyId, atendimentos: 41, contratos: 7 },
+  { nome: "Camila Reis", imobiliaria: "morar" as AgencyId, atendimentos: 36, contratos: 6 },
+  { nome: "Diego Alves", imobiliaria: "morar" as AgencyId, atendimentos: 29, contratos: 4 },
 ];
