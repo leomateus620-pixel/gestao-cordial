@@ -28,20 +28,37 @@ export function AppShell() {
     <div className="relative mx-auto flex min-h-screen w-full max-w-[1180px] flex-col font-sans text-foreground">
       <MeshBackground />
 
-      <aside className="glass-panel-strong fixed inset-y-4 left-4 z-40 hidden w-72 flex-col overflow-hidden rounded-[2rem] border border-white/50 p-4 shadow-2xl shadow-primary/10 lg:flex">
+      <aside className="sidebar-glass fixed inset-y-4 left-4 z-40 hidden w-72 flex-col overflow-hidden rounded-[2rem] p-4 lg:flex">
         <div className="mb-5 flex items-center gap-3 px-2 pt-1">
-          <div className="grid size-11 place-items-center rounded-2xl bg-primary/15 text-primary shadow-inner">
+          <div
+            className="grid size-11 place-items-center rounded-2xl"
+            style={{
+              background: "rgba(95,175,199,0.18)",
+              color: "#5fafc7",
+            }}
+          >
             <Building2 className="size-5" />
           </div>
           <div className="min-w-0">
-            <span className="text-[10px] font-bold uppercase tracking-[0.24em] text-primary">
+            <span
+              className="text-[10px] font-bold uppercase tracking-[0.24em]"
+              style={{ color: "#5fafc7" }}
+            >
               Gestão Cordial
             </span>
-            <p className="truncate text-sm font-semibold text-foreground/80">Painel imobiliário</p>
+            <p className="truncate text-sm font-semibold text-white/85">Sistema Imobiliário</p>
           </div>
         </div>
 
-        <SidebarMenu className="min-h-0 flex-1 overflow-y-auto pr-1" compact />
+        <SidebarMenu
+          className="min-h-0 flex-1 overflow-y-auto pr-1"
+          compact
+          tone="dark"
+        />
+
+        <div className="mt-3 border-t border-white/10 pt-3 text-[10px] uppercase tracking-[0.18em] text-white/35">
+          Cordial Imóveis + Morar Imóveis
+        </div>
       </aside>
 
       <div className="relative z-10 flex min-h-screen w-full flex-col lg:pl-80">
