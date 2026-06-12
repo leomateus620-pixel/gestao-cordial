@@ -1,6 +1,14 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Eye, EyeOff, LockKeyhole, LogIn, UserRound } from "lucide-react";
+import {
+  AlertCircle,
+  Eye,
+  EyeOff,
+  Loader2,
+  LockKeyhole,
+  LogIn,
+  UserRound,
+} from "lucide-react";
 import { login, useSession } from "@/lib/auth-mock";
 
 export const Route = createFileRoute("/login")({
@@ -23,21 +31,31 @@ function LoginPage() {
   const [erro, setErro] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
   const [senhaVisivel, setSenhaVisivel] = useState(false);
+  const [carregando, setCarregando] = useState(false);
   const [logoDisponivel, setLogoDisponivel] = useState(true);
 
   useEffect(() => {
     if (session) navigate({ to: "/" });
   }, [session, navigate]);
 
+  const camposPreenchidos = usuario.trim().length > 0 && senha.length > 0;
+
   function submit(e: React.FormEvent) {
     e.preventDefault();
+    if (carregando || !camposPreenchidos) return;
     setInfo(null);
-    const u = login(usuario, senha);
-    if (!u) {
-      setErro("Usuário ou senha inválidos.");
-      return;
-    }
-    navigate({ to: "/" });
+    setErro(null);
+    setCarregando(true);
+
+    window.setTimeout(() => {
+      const u = login(usuario, senha);
+      if (!u) {
+        setErro("Usuário ou senha inválidos.");
+        setCarregando(false);
+        return;
+      }
+      navigate({ to: "/" });
+    }, 420);
   }
 
   function solicitarRecuperacao() {

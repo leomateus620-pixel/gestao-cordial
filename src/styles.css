@@ -385,6 +385,37 @@
   animation: login-card-rise 0.55s ease-out both;
 }
 
+.login-frame {
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(22px) saturate(140%);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow:
+    0 32px 90px rgba(0, 0, 0, 0.38),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14);
+}
+
+.login-brand-panel {
+  background:
+    radial-gradient(circle at 88% 4%, rgba(217, 120, 45, 0.16), transparent 42%),
+    radial-gradient(circle at 0% 100%, rgba(95, 175, 199, 0.2), transparent 48%),
+    linear-gradient(
+      150deg,
+      rgba(23, 27, 33, 0.94) 0%,
+      rgba(30, 44, 52, 0.92) 55%,
+      rgba(23, 77, 97, 0.9) 100%
+    );
+}
+
+.login-card-glass {
+  background: rgba(251, 248, 244, 0.88);
+  backdrop-filter: blur(18px) saturate(145%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.65);
+}
+
+.login-accent-hairline {
+  background: linear-gradient(90deg, transparent, rgba(240, 168, 109, 0.6), transparent);
+}
+
 .login-input-wrap {
   box-shadow: inset 0 1px 2px rgba(23, 27, 33, 0.04);
 }
@@ -394,6 +425,18 @@
   background: #fff;
   box-shadow:
     0 0 0 4px rgba(30, 100, 125, 0.12),
+    0 8px 20px -12px rgba(30, 100, 125, 0.35),
+    inset 0 1px 2px rgba(23, 27, 33, 0.04);
+}
+
+.login-input-erro {
+  border-color: rgba(201, 76, 76, 0.55);
+}
+
+.login-input-erro:focus-within {
+  border-color: #c94c4c;
+  box-shadow:
+    0 0 0 4px rgba(201, 76, 76, 0.12),
     inset 0 1px 2px rgba(23, 27, 33, 0.04);
 }
 
@@ -413,7 +456,7 @@
   box-shadow: 0 14px 30px rgba(30, 100, 125, 0.3);
 }
 
-.login-submit:hover {
+.login-submit:not(:disabled):hover {
   background: linear-gradient(135deg, #174d61, #123d4e);
   box-shadow: 0 18px 38px rgba(30, 100, 125, 0.36);
 }
@@ -425,6 +468,20 @@
 .login-submit:disabled {
   filter: saturate(0.7);
   box-shadow: none;
+}
+
+.login-submit:disabled {
+  cursor: not-allowed;
+  opacity: 0.62;
+  box-shadow: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-mesh,
+  .login-premium-logo,
+  .login-card-enter {
+    animation: none;
+  }
 }
 
 @keyframes login-card-rise {
