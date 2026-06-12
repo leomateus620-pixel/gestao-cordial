@@ -1,15 +1,24 @@
 export function MeshBackground() {
   return (
     <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
-      <div className="absolute inset-0 bg-background" />
-      <div className="animate-mesh absolute -top-[20%] -left-[10%] h-[70%] w-[100%] rounded-full bg-primary/15 blur-[120px]" />
       <div
-        className="animate-mesh absolute -bottom-[10%] -right-[10%] h-[60%] w-[80%] rounded-full bg-orange-300/30 blur-[110px]"
-        style={{ animationDelay: "-7s" }}
+        className="absolute inset-0"
+        style={{
+          background:
+            "linear-gradient(135deg, #f5f1eb 0%, #fbf8f4 48%, #efe7dc 100%)",
+        }}
       />
       <div
-        className="animate-mesh absolute top-[35%] left-[40%] h-[40%] w-[50%] rounded-full bg-amber-200/25 blur-[100px]"
-        style={{ animationDelay: "-12s" }}
+        className="animate-mesh absolute -top-[15%] -left-[10%] h-[70%] w-[80%] rounded-full blur-[130px]"
+        style={{ background: "rgba(95, 175, 199, 0.32)" }}
+      />
+      <div
+        className="animate-mesh absolute -top-[5%] -right-[10%] h-[60%] w-[70%] rounded-full blur-[120px]"
+        style={{ background: "rgba(217, 120, 45, 0.22)", animationDelay: "-7s" }}
+      />
+      <div
+        className="animate-mesh absolute top-[45%] left-[35%] h-[45%] w-[55%] rounded-full blur-[110px]"
+        style={{ background: "rgba(240, 168, 109, 0.18)", animationDelay: "-12s" }}
       />
     </div>
   );
