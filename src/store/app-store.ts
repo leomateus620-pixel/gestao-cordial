@@ -17,6 +17,7 @@ import {
   type Imovel,
   type Lancamento,
 } from "@/lib/mock/data";
+import { notificationsSeed, type AppNotification } from "@/lib/mock/notifications";
 
 type AgencyFilter = AgencyId | "todas";
 
@@ -29,6 +30,9 @@ type State = {
   contratos: Contrato[];
   agenda: Compromisso[];
   lancamentos: Lancamento[];
+  notifications: AppNotification[];
+  markNotificationRead: (id: string) => void;
+  markAllNotificationsRead: () => void;
   setAgency: (a: AgencyFilter) => void;
   addCliente: (c: Omit<Cliente, "id" | "iniciais" | "criadoEm">) => void;
   addImovel: (i: Omit<Imovel, "id">) => void;
@@ -54,6 +58,13 @@ export const useApp = create<State>()(
       contratos: contratosSeed,
       agenda: agendaSeed,
       lancamentos: lancamentosSeed,
+      notifications: notificationsSeed,
+      markNotificationRead: (id) =>
+        set((s) => ({
+          notifications: s.notifications.map((n) => (n.id === id ? { ...n, read: true } : n)),
+        })),
+      markAllNotificationsRead: () =>
+        set((s) => ({ notifications: s.notifications.map((n) => ({ ...n, read: true })) })),
       setAgency: (agency) => set({ agency }),
       addCliente: (c) =>
         set((s) => ({

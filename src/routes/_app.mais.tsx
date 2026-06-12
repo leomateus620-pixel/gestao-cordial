@@ -1,14 +1,54 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { Users, UserCog, FileText, Wallet, BarChart3, LogOut, Building2 } from "lucide-react";
+import { Users, UserCog, FileText, Wallet, BarChart3, LogOut, Building2, Plug } from "lucide-react";
 import { useSession, logout } from "@/lib/auth-mock";
+import { PermissionGuard } from "@/components/permission-guard";
+import type { AppModule } from "@/lib/mock/permissions";
 
-const items = [
-  { to: "/clientes", label: "Clientes", desc: "Cadastro e histórico", icon: Users },
-  { to: "/corretores", label: "Corretores", desc: "Equipe e performance", icon: UserCog },
-  { to: "/contratos", label: "Contratos", desc: "Vendas e aluguéis", icon: FileText },
-  { to: "/financeiro", label: "Financeiro", desc: "Receita e comissões", icon: Wallet },
-  { to: "/relatorios", label: "Relatórios", desc: "Indicadores e ranking", icon: BarChart3 },
-];
+const items: { to: string; label: string; desc: string; icon: typeof Users; module: AppModule }[] =
+  [
+    {
+      to: "/clientes",
+      label: "Clientes",
+      desc: "Cadastro e histórico",
+      icon: Users,
+      module: "clientes",
+    },
+    {
+      to: "/corretores",
+      label: "Corretores",
+      desc: "Equipe e performance",
+      icon: UserCog,
+      module: "corretores",
+    },
+    {
+      to: "/contratos",
+      label: "Contratos",
+      desc: "Vendas e aluguéis",
+      icon: FileText,
+      module: "contratos",
+    },
+    {
+      to: "/financeiro",
+      label: "Financeiro",
+      desc: "Receita e comissões",
+      icon: Wallet,
+      module: "financeiro",
+    },
+    {
+      to: "/relatorios",
+      label: "Relatórios",
+      desc: "Indicadores e ranking",
+      icon: BarChart3,
+      module: "relatorios",
+    },
+    {
+      to: "/integracoes",
+      label: "Integrações",
+      desc: "Conta Azul mockada",
+      icon: Plug,
+      module: "integracoes",
+    },
+  ];
 
 export const Route = createFileRoute("/_app/mais")({
   head: () => ({ meta: [{ title: "Mais — Gestão Cordial" }] }),
@@ -32,42 +72,57 @@ function Page() {
         </div>
         <div className="min-w-0">
           <p className="truncate text-sm font-semibold">{session?.nome}</p>
-          <p className="text-[11px] text-foreground/55">{session?.cargo}</p>
+          <p className="text-[11px] text-foreground/55">
+            {session?.perfilLabel} · {session?.cargo}
+          </p>
         </div>
       </section>
 
       <section className="mb-5">
-        <h3 className="mb-2 px-1 text-[11px] font-bold uppercase tracking-wider text-foreground/55">Módulos</h3>
+        <h3 className="mb-2 px-1 text-[11px] font-bold uppercase tracking-wider text-foreground/55">
+          Módulos
+        </h3>
         <div className="glass-panel divide-y divide-white/50 overflow-hidden rounded-3xl">
           {items.map((i) => {
             const Icon = i.icon;
             return (
-              <Link key={i.to} to={i.to as never} className="flex items-center gap-3 px-4 py-3.5 active:bg-white/50">
-                <div className="grid size-9 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary">
-                  <Icon className="size-4" />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-medium">{i.label}</p>
-                  <p className="truncate text-[11px] text-foreground/55">{i.desc}</p>
-                </div>
-              </Link>
+              <PermissionGuard key={i.to} modules={[i.module]}>
+                <Link
+                  to={i.to as never}
+                  className="flex items-center gap-3 px-4 py-3.5 active:bg-white/50"
+                >
+                  <div className="grid size-9 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary">
+                    <Icon className="size-4" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-medium">{i.label}</p>
+                    <p className="truncate text-[11px] text-foreground/55">{i.desc}</p>
+                  </div>
+                </Link>
+              </PermissionGuard>
             );
           })}
         </div>
       </section>
 
       <section className="mb-5">
-        <h3 className="mb-2 px-1 text-[11px] font-bold uppercase tracking-wider text-foreground/55">Imobiliárias</h3>
+        <h3 className="mb-2 px-1 text-[11px] font-bold uppercase tracking-wider text-foreground/55">
+          Imobiliárias
+        </h3>
         <div className="glass-panel rounded-3xl p-4">
           <div className="flex items-center gap-3">
-            <div className="grid size-9 shrink-0 place-items-center rounded-xl bg-primary/15 text-primary"><Building2 className="size-4" /></div>
+            <div className="grid size-9 shrink-0 place-items-center rounded-xl bg-primary/15 text-primary">
+              <Building2 className="size-4" />
+            </div>
             <div>
               <p className="text-sm font-semibold">Cordial Imóveis</p>
               <p className="text-[11px] text-foreground/55">Operação completa</p>
             </div>
           </div>
           <div className="mt-3 flex items-center gap-3 border-t border-white/40 pt-3">
-            <div className="grid size-9 shrink-0 place-items-center rounded-xl bg-amber-500/15 text-amber-700"><Building2 className="size-4" /></div>
+            <div className="grid size-9 shrink-0 place-items-center rounded-xl bg-amber-500/15 text-amber-700">
+              <Building2 className="size-4" />
+            </div>
             <div>
               <p className="text-sm font-semibold">Morar Imóveis</p>
               <p className="text-[11px] text-foreground/55">Operação completa</p>

@@ -5,14 +5,16 @@ import { MeshBackground } from "./mesh-background";
 import { AgencySwitcher } from "./agency-switcher";
 import { useSession } from "@/lib/auth-mock";
 import { cn } from "@/lib/utils";
+import { NotificationBell } from "./notification-bell";
+import type { AppModule } from "@/lib/mock/permissions";
 
-type NavItem = { to: string; label: string; icon: typeof Home; exact?: boolean };
+type NavItem = { to: string; label: string; icon: typeof Home; module: AppModule; exact?: boolean };
 const navItems: NavItem[] = [
-  { to: "/", label: "Início", icon: Home, exact: true },
-  { to: "/atendimentos", label: "Atend.", icon: Inbox },
-  { to: "/imoveis", label: "Imóveis", icon: Building2 },
-  { to: "/agenda", label: "Agenda", icon: Calendar },
-  { to: "/mais", label: "Mais", icon: LayoutGrid },
+  { to: "/", label: "Início", icon: Home, module: "dashboard", exact: true },
+  { to: "/atendimentos", label: "Atend.", icon: Inbox, module: "atendimentos" },
+  { to: "/imoveis", label: "Imóveis", icon: Building2, module: "imoveis" },
+  { to: "/agenda", label: "Agenda", icon: Calendar, module: "agenda" },
+  { to: "/mais", label: "Mais", icon: LayoutGrid, module: "dashboard" },
 ];
 
 export function AppShell() {
@@ -26,27 +28,30 @@ export function AppShell() {
 
   if (!session) return null;
 
+  const visibleNav = navItems.filter((item) => session.modules.includes(item.module));
+
   return (
-    <div className="relative mx-auto flex min-h-screen w-full max-w-[480px] flex-col font-sans text-foreground">
+    <div className="relative mx-auto flex min-h-screen w-full max-w-[480px] flex-col font-sans text-foreground md:max-w-5xl">
       <MeshBackground />
 
       <header className="sticky top-0 z-30 flex flex-col gap-3 px-5 pt-6 pb-3">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-3">
           <div className="flex min-w-0 flex-col">
             <span className="text-[10px] font-bold uppercase tracking-[0.22em] text-primary">
               Gestão Cordial
             </span>
-            <h1 className="truncate text-xl font-semibold tracking-tight">
-              Olá, {session.nome}
-            </h1>
+            <h1 className="truncate text-xl font-semibold tracking-tight">Olá, {session.nome}</h1>
           </div>
-          <Link
-            to="/mais"
-            className="glass-panel grid size-10 shrink-0 place-items-center rounded-full text-sm font-semibold text-primary"
-            aria-label="Perfil"
-          >
-            {session.iniciais}
-          </Link>
+          <div className="flex shrink-0 items-center gap-2">
+            <NotificationBell />
+            <Link
+              to="/mais"
+              className="glass-panel grid size-10 place-items-center rounded-full text-sm font-semibold text-primary md:size-11"
+              aria-label="Perfil"
+            >
+              {session.iniciais}
+            </Link>
+          </div>
         </div>
         <AgencySwitcher />
       </header>
@@ -56,7 +61,7 @@ export function AppShell() {
       </main>
 
       <nav className="fixed bottom-5 left-1/2 z-40 flex h-16 w-[calc(100%-2rem)] max-w-[448px] -translate-x-1/2 items-center justify-around rounded-full glass-panel-strong px-2">
-        {navItems.map((item) => {
+        {visibleNav.map((item) => {
           const active = item.exact ? pathname === item.to : pathname.startsWith(item.to);
           const Icon = item.icon;
           return (
@@ -68,10 +73,11 @@ export function AppShell() {
                 active ? "text-primary" : "text-foreground/45",
               )}
             >
-              <Icon className={cn("size-5", active && "drop-shadow-sm")} strokeWidth={active ? 2.4 : 1.8} />
-              <span className="text-[9px] font-bold uppercase tracking-tighter">
-                {item.label}
-              </span>
+              <Icon
+                className={cn("size-5", active && "drop-shadow-sm")}
+                strokeWidth={active ? 2.4 : 1.8}
+              />
+              <span className="text-[9px] font-bold uppercase tracking-tighter">{item.label}</span>
               {active && <span className="absolute -bottom-1 size-1 rounded-full bg-primary" />}
             </Link>
           );

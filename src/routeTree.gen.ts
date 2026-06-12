@@ -14,6 +14,7 @@ import { Route as AppRouteImport } from './routes/_app'
 import { Route as AppIndexRouteImport } from './routes/_app.index'
 import { Route as AppRelatoriosRouteImport } from './routes/_app.relatorios'
 import { Route as AppMaisRouteImport } from './routes/_app.mais'
+import { Route as AppIntegracoesRouteImport } from './routes/_app.integracoes'
 import { Route as AppImoveisRouteImport } from './routes/_app.imoveis'
 import { Route as AppFinanceiroRouteImport } from './routes/_app.financeiro'
 import { Route as AppCorretoresRouteImport } from './routes/_app.corretores'
@@ -44,6 +45,11 @@ const AppRelatoriosRoute = AppRelatoriosRouteImport.update({
 const AppMaisRoute = AppMaisRouteImport.update({
   id: '/mais',
   path: '/mais',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppIntegracoesRoute = AppIntegracoesRouteImport.update({
+  id: '/integracoes',
+  path: '/integracoes',
   getParentRoute: () => AppRoute,
 } as any)
 const AppImoveisRoute = AppImoveisRouteImport.update({
@@ -92,6 +98,7 @@ export interface FileRoutesByFullPath {
   '/corretores': typeof AppCorretoresRoute
   '/financeiro': typeof AppFinanceiroRoute
   '/imoveis': typeof AppImoveisRoute
+  '/integracoes': typeof AppIntegracoesRoute
   '/mais': typeof AppMaisRoute
   '/relatorios': typeof AppRelatoriosRoute
 }
@@ -104,6 +111,7 @@ export interface FileRoutesByTo {
   '/corretores': typeof AppCorretoresRoute
   '/financeiro': typeof AppFinanceiroRoute
   '/imoveis': typeof AppImoveisRoute
+  '/integracoes': typeof AppIntegracoesRoute
   '/mais': typeof AppMaisRoute
   '/relatorios': typeof AppRelatoriosRoute
   '/': typeof AppIndexRoute
@@ -119,6 +127,7 @@ export interface FileRoutesById {
   '/_app/corretores': typeof AppCorretoresRoute
   '/_app/financeiro': typeof AppFinanceiroRoute
   '/_app/imoveis': typeof AppImoveisRoute
+  '/_app/integracoes': typeof AppIntegracoesRoute
   '/_app/mais': typeof AppMaisRoute
   '/_app/relatorios': typeof AppRelatoriosRoute
   '/_app/': typeof AppIndexRoute
@@ -135,6 +144,7 @@ export interface FileRouteTypes {
     | '/corretores'
     | '/financeiro'
     | '/imoveis'
+    | '/integracoes'
     | '/mais'
     | '/relatorios'
   fileRoutesByTo: FileRoutesByTo
@@ -147,6 +157,7 @@ export interface FileRouteTypes {
     | '/corretores'
     | '/financeiro'
     | '/imoveis'
+    | '/integracoes'
     | '/mais'
     | '/relatorios'
     | '/'
@@ -161,6 +172,7 @@ export interface FileRouteTypes {
     | '/_app/corretores'
     | '/_app/financeiro'
     | '/_app/imoveis'
+    | '/_app/integracoes'
     | '/_app/mais'
     | '/_app/relatorios'
     | '/_app/'
@@ -206,6 +218,13 @@ declare module '@tanstack/react-router' {
       path: '/mais'
       fullPath: '/mais'
       preLoaderRoute: typeof AppMaisRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/integracoes': {
+      id: '/_app/integracoes'
+      path: '/integracoes'
+      fullPath: '/integracoes'
+      preLoaderRoute: typeof AppIntegracoesRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/imoveis': {
@@ -268,6 +287,7 @@ interface AppRouteChildren {
   AppCorretoresRoute: typeof AppCorretoresRoute
   AppFinanceiroRoute: typeof AppFinanceiroRoute
   AppImoveisRoute: typeof AppImoveisRoute
+  AppIntegracoesRoute: typeof AppIntegracoesRoute
   AppMaisRoute: typeof AppMaisRoute
   AppRelatoriosRoute: typeof AppRelatoriosRoute
   AppIndexRoute: typeof AppIndexRoute
@@ -281,6 +301,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppCorretoresRoute: AppCorretoresRoute,
   AppFinanceiroRoute: AppFinanceiroRoute,
   AppImoveisRoute: AppImoveisRoute,
+  AppIntegracoesRoute: AppIntegracoesRoute,
   AppMaisRoute: AppMaisRoute,
   AppRelatoriosRoute: AppRelatoriosRoute,
   AppIndexRoute: AppIndexRoute,
