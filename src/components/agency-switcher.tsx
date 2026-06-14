@@ -12,7 +12,7 @@ export function AgencySwitcher() {
   const agency = useApp((s) => s.agency);
   const setAgency = useApp((s) => s.setAgency);
   const [activeAgency, setActiveAgency] = useState(agency);
-  const pendingUpdate = useRef<number | null>(null);
+  const pendingFrame = useRef<number | null>(null);
   const pointerHandled = useRef(false);
 
   useEffect(() => {
@@ -21,7 +21,7 @@ export function AgencySwitcher() {
 
   useEffect(
     () => () => {
-      if (pendingUpdate.current !== null) window.clearTimeout(pendingUpdate.current);
+      if (pendingFrame.current !== null) window.cancelAnimationFrame(pendingFrame.current);
     },
     [],
   );
@@ -29,16 +29,18 @@ export function AgencySwitcher() {
   const changeAgency = (nextAgency: (typeof options)[number]["id"]) => {
     setActiveAgency(nextAgency);
 
-    if (pendingUpdate.current !== null) window.clearTimeout(pendingUpdate.current);
+    if (pendingFrame.current !== null) window.cancelAnimationFrame(pendingFrame.current);
     if (agency === nextAgency) {
-      pendingUpdate.current = null;
+      pendingFrame.current = null;
       return;
     }
 
-    pendingUpdate.current = window.setTimeout(() => {
-      setAgency(nextAgency);
-      pendingUpdate.current = null;
-    }, 45);
+    pendingFrame.current = window.requestAnimationFrame(() => {
+      pendingFrame.current = window.requestAnimationFrame(() => {
+        setAgency(nextAgency);
+        pendingFrame.current = null;
+      });
+    });
   };
 
   return (
