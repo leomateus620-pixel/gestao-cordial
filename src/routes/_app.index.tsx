@@ -19,7 +19,7 @@ import {
 import type { ReactNode } from "react";
 import { useState } from "react";
 import { Fab } from "@/components/fab";
-import { useApp, useFiltered } from "@/store/app-store";
+import { useApp } from "@/store/app-store";
 import { brl } from "@/lib/format";
 import {
   dashboardAluguelVenda,
@@ -42,6 +42,7 @@ import {
   pieSeries,
   tooltipStyle,
 } from "@/lib/chart-palette";
+import { useShallow } from "zustand/react/shallow";
 import {
   ArrowDownRight,
   ArrowUpRight,
@@ -85,14 +86,36 @@ type MetricCardData = {
 function Dashboard() {
   const [open, setOpen] = useState(false);
   const session = useSession();
-  const agency = useApp((s) => s.agency);
-  const atendimentos = useFiltered(useApp((s) => s.atendimentos));
-  const imoveis = useFiltered(useApp((s) => s.imoveis));
-  const contratos = useFiltered(useApp((s) => s.contratos));
-  const agenda = useFiltered(useApp((s) => s.agenda));
-  const lancamentos = useFiltered(useApp((s) => s.lancamentos));
-  const clientes = useFiltered(useApp((s) => s.clientes));
-  const corretores = useFiltered(useApp((s) => s.corretores));
+  const {
+    agency,
+    rawAtendimentos,
+    rawImoveis,
+    rawContratos,
+    rawAgenda,
+    rawLancamentos,
+    rawClientes,
+    rawCorretores,
+  } = useApp(
+    useShallow((s) => ({
+      agency: s.agency,
+      rawAtendimentos: s.atendimentos,
+      rawImoveis: s.imoveis,
+      rawContratos: s.contratos,
+      rawAgenda: s.agenda,
+      rawLancamentos: s.lancamentos,
+      rawClientes: s.clientes,
+      rawCorretores: s.corretores,
+    })),
+  );
+  const filterByAgency = <T extends { imobiliaria: "cordial" | "morar" }>(items: T[]) =>
+    agency === "todas" ? items : items.filter((item) => item.imobiliaria === agency);
+  const atendimentos = filterByAgency(rawAtendimentos);
+  const imoveis = filterByAgency(rawImoveis);
+  const contratos = filterByAgency(rawContratos);
+  const agenda = filterByAgency(rawAgenda);
+  const lancamentos = filterByAgency(rawLancamentos);
+  const clientes = filterByAgency(rawClientes);
+  const corretores = filterByAgency(rawCorretores);
 
   const mesAtual = "2026-06";
   const atendimentosMes = atendimentos.filter((a) => a.criadoEm.startsWith(mesAtual)).length;
