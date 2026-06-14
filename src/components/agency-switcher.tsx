@@ -30,6 +30,11 @@ export function AgencySwitcher() {
     setActiveAgency(nextAgency);
 
     if (pendingUpdate.current !== null) window.clearTimeout(pendingUpdate.current);
+    if (agency === nextAgency) {
+      pendingUpdate.current = null;
+      return;
+    }
+
     pendingUpdate.current = window.setTimeout(() => {
       setAgency(nextAgency);
       pendingUpdate.current = null;
