@@ -15,6 +15,7 @@ export function AgencySwitcher() {
       {options.map((o) => (
         <button
           key={o.id}
+          type="button"
           onClick={() => setAgency(o.id)}
           style={
             agency === o.id
@@ -22,10 +23,10 @@ export function AgencySwitcher() {
               : undefined
           }
           className={cn(
-            "min-w-0 flex-1 truncate rounded-full px-3 py-1.5 text-[11px] font-semibold transition-all sm:text-xs",
+            "min-w-0 flex-1 truncate rounded-full px-3 py-1.5 text-[11px] font-semibold select-none touch-manipulation [-webkit-tap-highlight-color:transparent] transition-[background-color,color,box-shadow,transform] duration-150 ease-out active:scale-[0.98] sm:text-xs",
             agency === o.id
               ? "shadow-[0_6px_18px_-6px_rgba(23,27,33,0.35)]"
-              : "text-foreground/60 hover:text-foreground/85",
+              : "text-foreground/60 [@media(hover:hover)]:hover:text-foreground/85",
           )}
         >
           {o.label}
