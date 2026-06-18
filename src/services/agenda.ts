@@ -227,7 +227,7 @@ export function toLegacyAgendaEvent(event: AgendaEvent): Compromisso {
     clienteId: event.clienteId,
     imovelId: event.imovelId,
     corretorId: event.responsavelPrincipalId ?? "sem-responsavel",
-    imobiliaria: event.imobiliaria,
+    imobiliaria: event.imobiliaria === "ambas" ? "cordial" : event.imobiliaria,
     local: event.local,
     status: statusMap[event.status],
     observacoes: event.observacoes,
