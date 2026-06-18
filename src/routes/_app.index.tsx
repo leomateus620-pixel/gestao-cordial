@@ -946,10 +946,7 @@ function ComparativoCard() {
               </div>
 
               {/* Stats — split row, sem caixinhas */}
-              <div
-                className="mt-4 grid grid-cols-3 divide-x text-center"
-                style={{ ["--tw-divide-opacity" as any]: 1 }}
-              >
+              <div className="mt-4 grid grid-cols-3 divide-x divide-foreground/10 text-center">
                 <StatCell
                   label="Atend."
                   value={item.atendimentos}
