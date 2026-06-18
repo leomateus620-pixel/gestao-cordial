@@ -3,6 +3,7 @@ import { ArrowLeft, Bed, CalendarDays, FileText, Maximize2, UsersRound } from "l
 import { StatusBadge } from "@/components/status-badge";
 import { useApp } from "@/store/app-store";
 import { brl } from "@/lib/format";
+import { atendimentoStatusLabel } from "@/types/atendimento";
 
 export const Route = createFileRoute("/_app/imoveis/$imovelId")({ component: Page });
 
@@ -63,15 +64,25 @@ function Page() {
         <Metric label="IPTU" value={brl(imovel.iptu ?? 420)} />
       </Grid>
       <Section title="Clientes interessados" icon={UsersRound}>
-        {atendimentos.map((a) => (
-          <Row
-            key={a.id}
-            title={clientes.find((c) => c.id === a.clienteId)?.nome ?? "Cliente"}
-            meta={a.status}
-            to="/clientes/$clienteId"
-            params={{ clienteId: a.clienteId }}
-          />
-        ))}
+        {atendimentos.map((a) => {
+          const clientName = clientes.find((c) => c.id === a.clienteId)?.nome ?? a.clienteNome;
+          return a.clienteId ? (
+            <Row
+              key={a.id}
+              title={clientName}
+              meta={atendimentoStatusLabel(a.status)}
+              to="/clientes/$clienteId"
+              params={{ clienteId: a.clienteId }}
+            />
+          ) : (
+            <div key={a.id} className="rounded-2xl bg-white/45 p-3 text-sm font-semibold">
+              {clientName}
+              <span className="block text-xs font-normal text-foreground/55">
+                Pré-atendimento · {atendimentoStatusLabel(a.status)}
+              </span>
+            </div>
+          );
+        })}
       </Section>
       <Section title="Visitas" icon={CalendarDays}>
         {visitas.map((v) => (

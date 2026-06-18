@@ -657,8 +657,12 @@ html,
 }
 
 @keyframes client-modal-backdrop-out {
-  from { opacity: 1; }
-  to { opacity: 0; }
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
 }
 
 @keyframes client-form-island-out {
@@ -680,9 +684,92 @@ html,
   animation: client-form-island-out 160ms cubic-bezier(0.4, 0, 1, 1) both;
 }
 
+@keyframes atendimento-form-island-in {
+  0% {
+    opacity: 0;
+    transform: translateY(42px) scale(0.76, 0.2);
+    border-radius: 3rem;
+  }
+
+  48% {
+    opacity: 1;
+    transform: translateY(-4px) scale(1.015, 1.01);
+  }
+
+  76% {
+    transform: translateY(1px) scale(0.997, 0.998);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes atendimento-form-island-out {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateY(24px) scale(0.92, 0.72);
+    border-radius: 3rem;
+  }
+}
+
+.atendimento-create-card {
+  transform-style: preserve-3d;
+  transform: perspective(1000px) rotateX(0deg) translateY(0) scale(1);
+}
+
+.atendimento-create-card::after {
+  position: absolute;
+  inset: 1px;
+  border-radius: inherit;
+  background: linear-gradient(125deg, rgba(255, 255, 255, 0.14), transparent 38%);
+  content: "";
+  pointer-events: none;
+}
+
+.atendimento-create-card:hover {
+  transform: perspective(1000px) rotateX(2.5deg) translateY(-3px) scale(1.008);
+  box-shadow:
+    0 26px 48px -25px rgba(5, 58, 62, 0.72),
+    0 14px 24px -18px rgba(197, 102, 44, 0.42),
+    inset 0 1px 1px rgba(255, 255, 255, 0.2);
+}
+
+.atendimento-create-card:active {
+  transform: perspective(1000px) rotateX(0deg) translateY(2px) scale(0.982);
+}
+
+.atendimento-modal-backdrop {
+  animation: client-modal-backdrop-in 180ms ease-out both;
+}
+
+.atendimento-form-modal {
+  transform-origin: 50% 12%;
+  animation: atendimento-form-island-in 390ms cubic-bezier(0.18, 0.9, 0.2, 1.08) both;
+}
+
+.atendimento-modal-backdrop--closing {
+  animation: client-modal-backdrop-out 150ms ease-in both;
+}
+
+.atendimento-form-modal--closing {
+  animation: atendimento-form-island-out 170ms cubic-bezier(0.4, 0, 1, 1) both;
+}
+
 @media (max-width: 640px) {
   .client-form-modal {
     animation-duration: 240ms;
+  }
+
+  .atendimento-form-modal {
+    transform-origin: 50% 100%;
+    animation-duration: 280ms;
   }
 }
 
@@ -691,13 +778,21 @@ html,
     transform: perspective(900px) rotateX(0deg) translateY(0) scale(1);
     box-shadow: none;
   }
+
+  .atendimento-create-card:hover {
+    transform: perspective(1000px) rotateX(0deg) translateY(0) scale(1);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .client-modal-backdrop,
   .client-form-modal,
   .client-modal-backdrop--closing,
-  .client-form-modal--closing {
+  .client-form-modal--closing,
+  .atendimento-modal-backdrop,
+  .atendimento-form-modal,
+  .atendimento-modal-backdrop--closing,
+  .atendimento-form-modal--closing {
     animation-duration: 0.01ms !important;
   }
 }

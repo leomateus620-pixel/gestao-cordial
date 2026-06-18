@@ -3,6 +3,7 @@ import { ArrowLeft, CalendarDays, FileText, Home, Mail, Phone, UserRound } from 
 import { StatusBadge } from "@/components/status-badge";
 import { useApp } from "@/store/app-store";
 import { brl } from "@/lib/format";
+import { atendimentoStatusLabel } from "@/types/atendimento";
 
 export const Route = createFileRoute("/_app/clientes/$clienteId")({
   head: () => ({ meta: [{ title: "Detalhe do cliente — Gestão Cordial" }] }),
@@ -89,7 +90,7 @@ function Page() {
             <div className="space-y-2">
               {atendimentos.map((a) => (
                 <div key={a.id} className="rounded-2xl bg-white/45 p-3">
-                  <StatusBadge status={a.status} />
+                  <StatusBadge status={atendimentoStatusLabel(a.status)} />
                   <p className="mt-2 text-xs text-foreground/65">{a.observacoes}</p>
                 </div>
               ))}

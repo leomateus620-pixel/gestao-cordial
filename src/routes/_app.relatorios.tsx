@@ -14,7 +14,7 @@ function Page() {
   const imoveis = useFiltered(useApp((s) => s.imoveis));
   const contratos = useFiltered(useApp((s) => s.contratos));
 
-  const fechados = atendimentos.filter((a) => a.status === "Fechado").length;
+  const fechados = atendimentos.filter((a) => a.status === "fechado").length;
   const total = atendimentos.length;
   const conversao = total ? Math.round((fechados / total) * 100) : 0;
 
@@ -25,7 +25,9 @@ function Page() {
     acc[i.bairro] = (acc[i.bairro] ?? 0) + 1;
     return acc;
   }, {});
-  const topBairros = Object.entries(bairros).sort((a, b) => b[1] - a[1]).slice(0, 5);
+  const topBairros = Object.entries(bairros)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 5);
 
   const ranking = [...corretores].sort((a, b) => b.comissaoMes - a.comissaoMes);
 
@@ -35,7 +37,9 @@ function Page() {
         <SectionHeader title="Conversão de atendimentos" />
         <div className="flex items-end gap-3">
           <span className="font-mono text-4xl font-bold text-primary">{conversao}%</span>
-          <span className="pb-1 text-[11px] text-foreground/55">{fechados} de {total} fechados</span>
+          <span className="pb-1 text-[11px] text-foreground/55">
+            {fechados} de {total} fechados
+          </span>
         </div>
         <div className="mt-3 h-2 overflow-hidden rounded-full bg-white/50">
           <div className="h-full rounded-full bg-primary" style={{ width: `${conversao}%` }} />
@@ -49,8 +53,14 @@ function Page() {
           <div className="bg-amber-300" style={{ flex: aluguel || 1 }} />
         </div>
         <div className="mt-3 flex justify-between text-[11px] text-foreground/60">
-          <span><span className="mr-1 inline-block size-2 rounded-full bg-primary" />Vendas: {venda}</span>
-          <span><span className="mr-1 inline-block size-2 rounded-full bg-amber-300" />Aluguéis: {aluguel}</span>
+          <span>
+            <span className="mr-1 inline-block size-2 rounded-full bg-primary" />
+            Vendas: {venda}
+          </span>
+          <span>
+            <span className="mr-1 inline-block size-2 rounded-full bg-amber-300" />
+            Aluguéis: {aluguel}
+          </span>
         </div>
       </section>
 
@@ -66,7 +76,9 @@ function Page() {
                 <p className="truncate text-sm font-medium">{c.nome}</p>
                 <p className="text-[10px] text-foreground/55">{c.contratosFechados} contratos</p>
               </div>
-              <p className="font-mono text-xs font-bold text-primary">{brl(c.comissaoMes, { compact: true })}</p>
+              <p className="font-mono text-xs font-bold text-primary">
+                {brl(c.comissaoMes, { compact: true })}
+              </p>
             </div>
           ))}
         </div>
