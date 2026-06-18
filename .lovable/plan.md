@@ -1,27 +1,54 @@
-## Ajustes na tela de Atendimentos
+## Validação Agenda PR — Polimento final
 
-### 1. Remover duplicidade do seletor de imobiliária
-Em `src/components/atendimentos/AtendimentoFilters.tsx`, remover o bloco `agencyOptions` (Todas/Cordial/Morar) que aparece dentro do componente de filtros. O seletor global do header (`agency-switcher`) continua sendo a fonte única. Remover também as props `agency` e `onAgencyChange` de `AtendimentoFilters` e do call site em `src/routes/_app.atendimentos.tsx`.
+### O que está OK (validado por leitura de código)
 
-### 2. Filtros colapsados por padrão
-Hoje, no desktop (≥`lg`), os selects de Finalidade/Tipo/Origem/Corretor/Prioridade/Período aparecem sempre expandidos. Reestruturar para:
+- **Sidebar**: `Agenda` é item principal direto (`type: "item"`) em `sidebar-menu.tsx`, com ícone `CalendarCheck2` e descrição "Visitas, retornos e compromissos". Não aparece dentro de Painel nem Relacionamento. Tooltip funciona no modo colapsado. Drawer mobile herda do mesmo componente.
+- **Bottom nav / mais**: `module-menu.ts` lista Agenda como `primary: true`, no mesmo nível de Início/Atendimentos/Imóveis/Mais.
+- **Rota `/agenda`**: registrada via `createFileRoute("/_app/agenda")`, head com title. Header com gradient teal + chips "Equipe coordenada" / "Integrações preparadas". Subtítulo correto.
+- **Sem FAB**: não há `<Fab>` na rota — ação principal é o `AgendaCreateCard`.
+- **CreateCard**: gradient teal premium, chips Visita/Fotos/Retorno/Assinatura, animação 3D em `.agenda-create-card`, dim ao abrir via `opacity-65 pointer-events-none`.
+- **Animação Dynamic Island**: keyframes `agenda-form-island-in/out` (380ms/170ms cubic-bezier), `transform-origin` adaptado para mobile (`50% 100%`), `--closing` aplicado via `requestClose` com setTimeout 170ms.
+- **Formulário**: 5 blocos (Tipo/título, Data/horário, Vínculos, Responsáveis, Lembretes+checklist) com `fieldset disabled={!canEdit}`, validação via `validateAgendaEvent`, sugestão automática de título por tipo (`agendaTitleSuggestion`).
+- **Edição**: mesmo modal reabre com `event` populado em `initialForm`, QuickActions Concluir/Reagendar/Cancelar disponíveis para `isEditing && canEdit`.
+- **Permissão**: `canEditAgendaEvent` — admin sempre pode; corretor pode próprio/participante (estruturado, sem quebrar UX).
+- **Lembretes/Checklist**: interno (gera lembrete real), e-mail/WhatsApp marcados como futuros (`canalFuturo: true`), checklist seed com os 6 itens sugeridos, salvamento local.
+- **Integrações futuras**: `googleCalendarSyncStatus: "preparado"`, sem chamadas externas.
+- **Normalização legada**: `normalizeAgendaEvent` mapeia `agendaEvents` brutos do store com fallback seguro de clientes/corretores/imóveis.
+- **Adapter**: `addCompromisso` no store permanece (consumido por código legado), `NovoCompromissoSheet` ainda existe mas hoje não é importado em nenhuma rota — não atrapalha.
+- **Card de evento**: horário em coluna fixa, badges tipo/status/prioridade, info grid (cliente, imóvel, local, responsável, participantes, lembrete), badge imobiliária, observação truncada, lock icon quando sem permissão.
+- **Filtros**: chips de período (Hoje/7d/Mês/Todos/Personalizado), botão "Filtros" sempre visível com chevron, secundários colapsados por padrão, "Limpar" presente. Mobile compacto.
+- **Summary cards**: 7 indicadores (Hoje, 7d, Visitas, Retornos, Fotos/Vídeos, Assinaturas, A confirmar) com scroll horizontal mobile + grid 7-col desktop.
 
-- Linha 1 (sempre visível): busca + botão "Filtros" com contador `activeSecondary` + atalho "Limpar" quando houver filtros ativos. Mesma linha em mobile e desktop (remover `lg:hidden` do botão).
-- Linha 2 (sempre visível): chips de status (`Todos`, `Novo`, `Em atendimento`, …) com scroll horizontal — já está OK, manter.
-- Linha 3 (colapsada por padrão): grade de selects secundários (Finalidade, Tipo, Origem, Corretor, Prioridade, Período) só renderiza quando `showFilters` é true. Em desktop usar `flex flex-wrap`, em mobile `grid grid-cols-2`. Botão "Limpar filtros" mantido dentro desse bloco também.
-- Estado inicial: `showFilters = false` em todos os breakpoints.
-- Animação de expansão suave (`transition-[grid-template-rows]` ou simples `animate-accordion-down` da nossa lib) para não parecer abrupto.
+### Polimentos a aplicar
 
-### 3. Revisar CTA "Novo atendimento"
-Com o seletor duplicado removido, a área acima do card encolhe. Validar que:
-- O card "Novo atendimento" continua acima dos chips de status e do resumo? Hoje a ordem é: filtros → CreateCard → Summary → lista. Manter essa ordem (card visível sem rolagem no desktop, logo após a busca/chips).
-- O hero "Central de entrada comercial" já carrega o título; o CTA não precisa repetir contexto. Manter conteúdo do card como está, apenas garantir que ele respira melhor agora que há menos elementos empilhados (sem alterar gradiente, chips ou animação aprovados).
-- Nenhum ajuste de cor/identidade visual.
+1. **`AgendaCreateCard` — CTA mobile invisível**
+   - O pill "Agendar" está em `hidden sm:flex`. No mobile, o usuário não vê call-to-action explícito.
+   - Adicionar um botão-seta compacto (`grid size-10 rounded-full bg-white/14 ring-1 ring-white/20`) visível em mobile (`sm:hidden`), igual ao usado em `AtendimentoCreateCard`. O pill "Agendar" continua em `sm:flex` no desktop.
 
-### Arquivos alterados
-- `src/components/atendimentos/AtendimentoFilters.tsx` — remover bloco agency, ajustar layout dos filtros secundários para colapsar, mover botão "Filtros" para visível em todos os breakpoints.
-- `src/routes/_app.atendimentos.tsx` — remover props `agency`/`onAgencyChange` na chamada de `AtendimentoFilters` (mantém uso de `setAgency` apenas via header global).
+2. **`AgendaFormModal` — glass no desktop**
+   - O `<form>` usa `bg-background` opaco. No desktop perde a sensação glass do resto do app.
+   - Adicionar `sm:bg-background/96 sm:backdrop-blur-xl` ao container do form, alinhando com o que aplicamos em Clientes/Atendimentos.
 
-### Fora de escopo
-- Sem mudanças em store, services, types, hero, card de criação, modal, summary cards, lista, ou outras rotas.
-- Sem alteração de identidade visual (cores, gradientes, glass).
+3. **`AgendaFormModal` — QuickActions Concluir/Reagendar/Cancelar acessíveis no mobile**
+   - Hoje o bloco está em `hidden lg:flex`, escondendo as ações no mobile/tablet durante edição.
+   - Trocar para `flex flex-wrap` sem o `hidden lg:flex` e ajustar gap/padding para caber no rodapé mobile. Em viewports muito pequenos, manter ícones com label compacto.
+
+4. **`AgendaFormModal` — `if (!open) return null` impede animação de saída**
+   - Como `requestClose` aguarda 170ms antes de `onOpenChange(false)`, o componente fica montado durante o fade-out — mas se o pai fechar diretamente (Escape sendo intercept fora, por ex.), o modal desmonta seco. Implementar padrão `mounted`+`closing` igual ao `AtendimentoFormModal` para garantir animação consistente em qualquer fonte de fechamento.
+   - Bônus: adicionar listener `Escape` para fechar com `requestClose`.
+
+5. **Checklist `key` colidindo em adição rápida**
+   - `check-${Date.now()}` pode colidir se o usuário adicionar dois itens no mesmo tick. Trocar por `check-${Date.now()}-${Math.random().toString(36).slice(2,6)}`. Bug raro mas trivial de blindar.
+
+6. **`AgendaFilters` período personalizado no mobile**
+   - Os dois inputs date ocupam coluna inteira no grid `grid-cols-2`. Garantir `col-span-1` em cada para ficarem lado a lado, e que o botão "Limpar" continue na linha final como `col-span-2`.
+
+### Não fazer
+- Sem remoção de `NovoCompromissoSheet` ou do legado `addCompromisso` no store (mantém adapter, conforme escopo).
+- Sem mudanças em rotas vizinhas, identidade visual, cores ou layout do hero.
+- Sem alterações em store, types ou services.
+
+### Arquivos a alterar
+- `src/components/agenda/AgendaCreateCard.tsx`
+- `src/components/agenda/AgendaFormModal.tsx`
+- `src/components/agenda/AgendaFilters.tsx`

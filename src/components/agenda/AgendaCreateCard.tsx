@@ -67,6 +67,12 @@ export function AgendaCreateCard({ onClick, isOpen }: { onClick: () => void; isO
           Agendar
           <ArrowUpRight className="size-4" />
         </span>
+        <span
+          aria-hidden="true"
+          className="grid size-10 shrink-0 place-items-center rounded-full bg-white/14 text-white ring-1 ring-white/20 transition duration-300 group-hover:bg-orange-200 group-hover:text-teal-950 sm:hidden"
+        >
+          <ArrowUpRight className="size-4" />
+        </span>
       </span>
     </button>
   );
