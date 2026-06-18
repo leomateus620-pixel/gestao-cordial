@@ -1,26 +1,33 @@
-## Problema
+## Polimento visual — Comparativo Cordial × Morar
 
-A pré-visualização usa um `<iframe>` apontando direto para `cordialimoveis.com` e `imobiliariamorarimoveis.com.br`. Ambos os sites enviam cabeçalhos `X-Frame-Options: SAMEORIGIN` / `Content-Security-Policy: frame-ancestors`, então o navegador **bloqueia silenciosamente** o carregamento dentro do sistema — o `onLoad` do iframe nunca dispara (ou dispara vazio), o skeleton fica eterno e só depois de 6,5 s aparece o aviso. Não é um bug de código nosso: é proteção dos sites.
+Refinar o card "Comparativo das operações" no Dashboard (`src/routes/_app.index.tsx`, função `ComparativoCard` + helper `MiniStat`) para um visual mais premium, com hierarquia mais clara e identidade Cordial/Morar mais marcada — sem alterar dados, fonte (`dashboardComparativoCordialMorar`) ou layout responsivo (scroll mobile, grid 2 cols desktop).
 
-Tentar contornar com iframe é inviável (não há proxy próprio e proxiar HTML quebraria CSS/JS dos sites). A solução leve é trocar o iframe por uma **imagem de screenshot** gerada por um serviço público de mShots (WordPress.com), que é gratuito, cacheado em CDN e não exige backend.
+### Mudanças visuais
 
-## Mudanças
+**Container externo**
+- Trocar o eyebrow "CORDIAL X MORAR" por um chip pequeno com ponto bicolor (azul Cordial + laranja Morar) + label, alinhado com o padrão dos outros cards do dashboard.
+- Subtítulo "Atendimentos · conversão · receita" vira badge discreta com ícone (TrendingUp) à direita.
+- Reduzir ruído do gradient externo (já glass) e padronizar com os ChartCards vizinhos.
 
-Arquivo único: `src/components/real-estate-site-preview-section.tsx`
+**Cards Cordial / Morar**
+- Header: nome da imobiliária maior (text-lg, font-bold) com um dot colorido antes; badge de conversão à direita ganha micro-sparkline visual (barra de progresso fina sob o valor, largura = conversão%).
+- Trocar borda lateral 3px por um "rail" vertical com gradient (color → transparent) na lateral esquerda, mais elegante.
+- MiniStats: aumentar contraste do número (text-xl, tabular-nums), label menor e mais clara; remover bg branco semi-opaco — usar apenas separadores verticais sutis entre as 3 stats (estilo "split row") para visual mais limpo e menos "caixinha dentro de caixinha".
+- Receita prevista: virar destaque principal — número maior (text-2xl), com label "Receita prevista" + delta vs outra imobiliária (ex: Cordial mostra "+R$ 200k vs Morar" em verde/cinza). Origem dos contatos vira chip pequeno com ícone (Instagram/Users).
+- Hover: leve elevação (translate-y + shadow intensificado), em vez de scale.
 
-1. **Remover o `<iframe>`** e toda a lógica associada (`previewLoaded`, `previewUnavailable`, `setTimeout` de 6500 ms, `useEffect`).
-2. **Adicionar componente de preview por imagem** usando `https://s.wordpress.com/mshots/v1/{encodedUrl}?w=1280&h=900`:
-   - `<img>` com `loading="lazy"`, `decoding="async"`, `referrerPolicy="no-referrer"`.
-   - Estado local simples: `status: "loading" | "ready" | "error"` controlado por `onLoad` / `onError`.
-   - Skeleton sobreposto enquanto `status === "loading"`; card de fallback com botão "Abrir em nova aba" quando `status === "error"`.
-   - mShots às vezes responde com placeholder enquanto gera a captura na primeira visita; tratar com 1 tentativa de retry automático após 4 s se ainda estiver em `loading`, depois cair em `error`.
-3. **Manter** a UI do dialog (chrome de janela, header, rodapé com CTA), só substituindo a área interna do iframe pela imagem responsiva (`aspect-[16/11]` desktop, `aspect-[9/13]` mobile).
-4. **Atualizar o texto** do header de "Se a prévia não carregar por proteção do site…" para algo mais claro: "Prévia gerada a partir de uma captura recente do site oficial."
-5. **Pré-carregar leve nos cards da lista**: opcionalmente usar a mesma URL mShots com `w=600` como thumbnail discreto no card de cada imobiliária (sem abrir o modal), com `loading="lazy"`. Isso melhora a percepção de integração sistema↔site sem peso adicional (imagens cacheadas em CDN).
+**Comparação cruzada (novo, sutil)**
+- Pequena linha-resumo no rodapé do container externo: "Cordial lidera em atendimentos (+46) · Morar lidera em aluguéis (+6)" calculada a partir dos dados, em text-[11px] muted. Reforça o propósito "comparativo".
 
-## Resultado esperado
+### Implementação técnica
 
-- Prévia carrega como imagem em 1–3 s, sem ficar travada em skeleton.
-- Sem chamadas pesadas; sem iframe bloqueado; sem timers longos.
-- Fallback claro e botão para abrir o site real em nova aba quando a captura falhar.
-- Funciona tanto para Cordial quanto para Morar com a mesma lógica.
+- Edição única em `src/routes/_app.index.tsx`, escopo restrito a `ComparativoCard` e `MiniStat` (renomear para `StatCell`).
+- Reutilizar `contextColors`, `brl`, `chartSystem` já importados; adicionar ícones do `lucide-react` (`TrendingUp`, `Instagram`, `Users`) — já usados no arquivo, sem novas deps.
+- Manter `dashboardComparativoCordialMorar` intacto; deltas calculados inline via `reduce`.
+- Sem alterar responsividade (snap horizontal mobile, `md:grid-cols-2` desktop) nem o slot `lg:col-span-2` no grid pai.
+- Sem mexer em tokens globais nem em outros componentes.
+
+### Validação
+
+- Conferir render em 390px (mobile) e 1366px (desktop) no preview.
+- Console sem erros; TS build limpo.
