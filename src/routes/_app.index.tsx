@@ -826,6 +826,24 @@ function SummaryRow({
 /* ─────────────────────────────────────────────────────────────────────────── */
 
 function ComparativoCard() {
+  const data = dashboardComparativoCordialMorar;
+  const cordial = data.find((d) => d.imobiliaria === "Cordial");
+  const morar = data.find((d) => d.imobiliaria === "Morar");
+
+  const lead = (key: "atendimentos" | "alugueis" | "vendas") => {
+    if (!cordial || !morar) return null;
+    const diff = cordial[key] - morar[key];
+    if (diff === 0) return null;
+    return {
+      winner: diff > 0 ? "Cordial" : "Morar",
+      delta: Math.abs(diff),
+    };
+  };
+
+  const atendLead = lead("atendimentos");
+  const aluLead = lead("alugueis");
+  const vendaLead = lead("vendas");
+
   return (
     <div
       className="rounded-3xl p-5 lg:col-span-2"
@@ -837,82 +855,246 @@ function ComparativoCard() {
         boxShadow: "0 18px 50px -14px rgba(23,27,33,0.12), inset 0 1px 0 rgba(255,255,255,0.85)",
       }}
     >
-      <div className="mb-4 flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-primary/70">
-            Cordial x Morar
-          </p>
+      <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+        <div className="flex flex-col gap-1.5">
+          <div className="inline-flex items-center gap-1.5 self-start rounded-full border border-foreground/10 bg-white/60 px-2.5 py-1">
+            <span className="flex -space-x-1">
+              <span
+                className="size-2 rounded-full ring-1 ring-white"
+                style={{ background: chartCordial }}
+              />
+              <span
+                className="size-2 rounded-full ring-1 ring-white"
+                style={{ background: chartMorar }}
+              />
+            </span>
+            <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-foreground/60">
+              Cordial × Morar
+            </span>
+          </div>
           <h2 className="text-base font-semibold tracking-tight">Comparativo das operações</h2>
         </div>
-        <span className="text-[10px] text-foreground/40">Atendimentos · conversão · receita</span>
+        <span className="inline-flex items-center gap-1.5 self-start rounded-full bg-foreground/[0.04] px-2.5 py-1 text-[10px] font-medium text-foreground/55 sm:self-auto">
+          <TrendingUp className="size-3" />
+          Atendimentos · conversão · receita
+        </span>
       </div>
 
       {/* Mobile: scroll horizontal com snap; Desktop: grid */}
       <div className="no-scrollbar -mx-3 flex snap-x snap-mandatory gap-3 overflow-x-auto scroll-px-3 px-3 pb-1 md:mx-0 md:grid md:grid-cols-2 md:overflow-visible md:px-0">
-        {dashboardComparativoCordialMorar.map((item) => {
+        {data.map((item) => {
           const color = contextColors[item.imobiliaria] ?? chartSystem;
           const isCordial = item.imobiliaria === "Cordial";
+          const other = isCordial ? morar : cordial;
+          const receitaDelta = other ? item.receitaPrevista - other.receitaPrevista : 0;
+          const origemIcon =
+            item.origemContatos?.toLowerCase().includes("instagram") ? (
+              <Instagram className="size-3" />
+            ) : (
+              <Users className="size-3" />
+            );
 
           return (
             <div
               key={item.imobiliaria}
-              className="w-[85%] min-w-[260px] max-w-[320px] flex-none snap-start rounded-2xl p-4 transition-all hover:scale-[1.01] md:w-auto md:min-w-0 md:max-w-none"
+              className="group relative w-[85%] min-w-[260px] max-w-[320px] flex-none snap-start overflow-hidden rounded-2xl p-4 pl-5 transition-all duration-300 hover:-translate-y-0.5 md:w-auto md:min-w-0 md:max-w-none"
               style={{
                 background: isCordial
                   ? "linear-gradient(135deg, rgba(43,127,163,0.08), rgba(43,127,163,0.04))"
                   : "linear-gradient(135deg, rgba(224,122,46,0.08), rgba(224,122,46,0.04))",
                 border: `1px solid ${color}28`,
-                borderLeft: `3px solid ${color}`,
-                boxShadow: `0 4px 16px -8px ${color}22`,
+                boxShadow: `0 6px 20px -10px ${color}33`,
               }}
             >
+              {/* Rail vertical com gradient */}
+              <span
+                aria-hidden
+                className="pointer-events-none absolute inset-y-3 left-0 w-[3px] rounded-full"
+                style={{
+                  background: `linear-gradient(180deg, ${color} 0%, ${color}55 60%, ${color}00 100%)`,
+                }}
+              />
+
               {/* Header do card */}
-              <div className="flex items-center justify-between gap-2">
-                <h3 className="text-sm font-bold" style={{ color }}>
-                  {item.imobiliaria}
-                </h3>
-                <span
-                  className="rounded-full px-2 py-0.5 font-mono text-[10px] font-bold"
-                  style={{ background: `${color}18`, color }}
-                >
-                  {item.conversao}% conv.
-                </span>
+              <div className="flex items-start justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <span
+                    className="size-2.5 rounded-full"
+                    style={{ background: color, boxShadow: `0 0 0 3px ${color}22` }}
+                  />
+                  <h3 className="text-base font-bold tracking-tight" style={{ color }}>
+                    {item.imobiliaria}
+                  </h3>
+                </div>
+                <div className="flex flex-col items-end gap-1">
+                  <span
+                    className="rounded-full px-2 py-0.5 font-mono text-[10px] font-bold tabular-nums"
+                    style={{ background: `${color}18`, color }}
+                  >
+                    {item.conversao}% conv.
+                  </span>
+                  <span className="block h-1 w-16 overflow-hidden rounded-full bg-foreground/5">
+                    <span
+                      className="block h-full rounded-full"
+                      style={{
+                        width: `${Math.min(100, item.conversao)}%`,
+                        background: color,
+                      }}
+                    />
+                  </span>
+                </div>
               </div>
 
-              {/* Stats */}
-              <div className="mt-3 grid grid-cols-3 gap-2 text-center">
-                <MiniStat label="Atend." value={item.atendimentos} color={color} />
-                <MiniStat label="Aluguéis" value={item.alugueis} color={color} />
-                <MiniStat label="Vendas" value={item.vendas} color={color} />
+              {/* Stats — split row, sem caixinhas */}
+              <div
+                className="mt-4 grid grid-cols-3 divide-x text-center"
+                style={{ ["--tw-divide-opacity" as any]: 1 }}
+              >
+                <StatCell
+                  label="Atend."
+                  value={item.atendimentos}
+                  color={color}
+                  lead={atendLead?.winner === item.imobiliaria}
+                />
+                <StatCell
+                  label="Aluguéis"
+                  value={item.alugueis}
+                  color={color}
+                  lead={aluLead?.winner === item.imobiliaria}
+                />
+                <StatCell
+                  label="Vendas"
+                  value={item.vendas}
+                  color={color}
+                  lead={vendaLead?.winner === item.imobiliaria}
+                />
               </div>
 
               {/* Receita */}
-              <div className="mt-3 rounded-xl p-3" style={{ background: `${color}0d` }}>
-                <p className="text-[10px] uppercase tracking-wider text-foreground/45">
-                  Receita prevista
-                </p>
-                <p className="mt-1 font-mono text-lg font-bold" style={{ color }}>
+              <div
+                className="mt-4 rounded-xl p-3"
+                style={{
+                  background: `linear-gradient(135deg, ${color}14, ${color}06)`,
+                  border: `1px solid ${color}1f`,
+                }}
+              >
+                <div className="flex items-baseline justify-between gap-2">
+                  <p className="text-[10px] font-medium uppercase tracking-wider text-foreground/50">
+                    Receita prevista
+                  </p>
+                  {receitaDelta !== 0 && (
+                    <span
+                      className="font-mono text-[10px] font-semibold tabular-nums"
+                      style={{
+                        color: receitaDelta > 0 ? color : "rgb(120,113,108)",
+                      }}
+                    >
+                      {receitaDelta > 0 ? "+" : "−"}
+                      {brl(Math.abs(receitaDelta), { compact: true })} vs{" "}
+                      {isCordial ? "Morar" : "Cordial"}
+                    </span>
+                  )}
+                </div>
+                <p
+                  className="mt-1 font-mono text-2xl font-bold tabular-nums leading-none"
+                  style={{ color }}
+                >
                   {brl(item.receitaPrevista, { compact: true })}
                 </p>
-                <p className="mt-0.5 text-[10px] text-foreground/50">
-                  Origem: {item.origemContatos}
-                </p>
+                <span
+                  className="mt-2 inline-flex items-center gap-1 rounded-full bg-white/60 px-2 py-0.5 text-[10px] font-medium text-foreground/60"
+                  style={{ border: `1px solid ${color}20` }}
+                >
+                  {origemIcon}
+                  {item.origemContatos}
+                </span>
               </div>
             </div>
           );
         })}
       </div>
+
+      {/* Resumo comparativo */}
+      {(atendLead || aluLead || vendaLead) && (
+        <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1 border-t border-foreground/5 pt-3 text-[11px] text-foreground/55">
+          <Sparkles className="size-3 text-foreground/40" />
+          {atendLead && (
+            <span>
+              <span
+                className="font-semibold"
+                style={{ color: contextColors[atendLead.winner] }}
+              >
+                {atendLead.winner}
+              </span>{" "}
+              lidera em atendimentos
+              <span className="ml-1 font-mono tabular-nums text-foreground/45">
+                (+{atendLead.delta})
+              </span>
+            </span>
+          )}
+          {aluLead && (
+            <span>
+              <span
+                className="font-semibold"
+                style={{ color: contextColors[aluLead.winner] }}
+              >
+                {aluLead.winner}
+              </span>{" "}
+              lidera em aluguéis
+              <span className="ml-1 font-mono tabular-nums text-foreground/45">
+                (+{aluLead.delta})
+              </span>
+            </span>
+          )}
+          {vendaLead && (
+            <span>
+              <span
+                className="font-semibold"
+                style={{ color: contextColors[vendaLead.winner] }}
+              >
+                {vendaLead.winner}
+              </span>{" "}
+              lidera em vendas
+              <span className="ml-1 font-mono tabular-nums text-foreground/45">
+                (+{vendaLead.delta})
+              </span>
+            </span>
+          )}
+        </div>
+      )}
     </div>
   );
 }
 
-function MiniStat({ label, value, color }: { label: string; value: number; color: string }) {
+function StatCell({
+  label,
+  value,
+  color,
+  lead,
+}: {
+  label: string;
+  value: number;
+  color: string;
+  lead?: boolean;
+}) {
   return (
-    <div className="rounded-xl bg-white/40 p-2.5">
-      <p className="font-mono text-base font-bold" style={{ color }}>
+    <div className="flex flex-col items-center justify-center gap-0.5 border-foreground/10 px-1 first:border-l-0 first:pl-0 last:pr-0">
+      <p
+        className="font-mono text-xl font-bold leading-none tabular-nums"
+        style={{ color }}
+      >
         {value}
       </p>
-      <p className="mt-0.5 text-[9px] uppercase tracking-wider text-foreground/45">{label}</p>
+      <p className="flex items-center gap-1 text-[9px] uppercase tracking-wider text-foreground/45">
+        {label}
+        {lead && (
+          <span
+            className="size-1 rounded-full"
+            style={{ background: color }}
+            aria-label="líder"
+          />
+        )}
+      </p>
     </div>
   );
 }
