@@ -175,7 +175,9 @@ export function AtendimentoFilters({
             onChange={(value) => onFiltersChange({ ...filters, corretor: value })}
           >
             <option value="todos">Corretor</option>
-            {atendimentoBrokerOptions.slice(0, -1).map((option) => (
+            {atendimentoBrokerOptions
+              .filter((option) => option.id !== "a_definir")
+              .map((option) => (
               <option key={option.id} value={option.id}>
                 {option.label}
               </option>
