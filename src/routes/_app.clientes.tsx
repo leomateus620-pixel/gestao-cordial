@@ -1,12 +1,18 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
-import { Mail, Phone, Search } from "lucide-react";
-import { useApp, useFiltered } from "@/store/app-store";
-import { Fab } from "@/components/fab";
-import { NovoClienteSheet } from "@/components/sheets/novo-cliente";
-import { ClientCard } from "@/components/shared/client-card";
-import { EmptyState } from "@/components/shared/empty-state";
-import { brl } from "@/lib/format";
+import { createFileRoute } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { CheckCircle2 } from "lucide-react";
+import { ClientCreateCard } from "@/components/clients/ClientCreateCard";
+import { ClientFilters } from "@/components/clients/ClientFilters";
+import { ClientFormModal } from "@/components/clients/ClientFormModal";
+import { ClientList } from "@/components/clients/ClientList";
+import { ClientSummaryCards } from "@/components/clients/ClientSummaryCards";
+import {
+  defaultClientFilters,
+  useClients,
+  type ClientFilters as ClientFiltersState,
+} from "@/hooks/useClients";
+import { useApp } from "@/store/app-store";
+import type { ClientCreateInput } from "@/types/client";
 
 export const Route = createFileRoute("/_app/clientes")({
   head: () => ({ meta: [{ title: "Clientes — Gestão Cordial" }] }),
@@ -15,79 +21,62 @@ export const Route = createFileRoute("/_app/clientes")({
 
 function Page() {
   const [open, setOpen] = useState(false);
-  const [q, setQ] = useState("");
-  const clientes = useFiltered(useApp((s) => s.clientes));
+  const [query, setQuery] = useState("");
+  const [filters, setFilters] = useState<ClientFiltersState>(defaultClientFilters);
+  const [success, setSuccess] = useState<string | null>(null);
+  const setAgency = useApp((state) => state.setAgency);
+  const { agency, filteredClients, stats, addClient } = useClients(query, filters);
 
-  const list = useMemo(
-    () => clientes.filter((c) => c.nome.toLowerCase().includes(q.toLowerCase())),
-    [clientes, q],
-  );
+  useEffect(() => {
+    if (!success) return;
+    const timer = window.setTimeout(() => setSuccess(null), 2600);
+    return () => window.clearTimeout(timer);
+  }, [success]);
+
+  function createClient(client: ClientCreateInput) {
+    addClient(client);
+    setSuccess(client.fullName);
+  }
 
   return (
-    <>
-      <div className="glass-panel mb-4 flex items-center gap-2 rounded-2xl px-3 py-2">
-        <Search className="size-4 text-foreground/50" />
-        <input
-          value={q}
-          onChange={(e) => setQ(e.target.value)}
-          placeholder="Buscar cliente..."
-          className="flex-1 bg-transparent text-sm outline-none placeholder:text-foreground/40"
-        />
-      </div>
+    <div className="space-y-4">
+      <ClientFilters
+        query={query}
+        onQueryChange={setQuery}
+        agency={agency}
+        onAgencyChange={setAgency}
+        filters={filters}
+        onFiltersChange={setFilters}
+      />
 
-      <div className="space-y-2">
-        {list.map((c) => (
-          <Link
-            key={c.id}
-            to="/clientes/$clienteId"
-            params={{ clienteId: c.id }}
-            className="block glass-panel rounded-2xl p-3 transition hover:bg-white/70"
-          >
-            <div className="flex items-center justify-between gap-3">
-              <div className="flex min-w-0 items-center gap-3">
-                <div className="grid size-10 shrink-0 place-items-center rounded-full bg-primary/12 text-xs font-bold text-primary">
-                  {c.iniciais}
-                </div>
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-semibold">{c.nome}</p>
-                  <p className="truncate text-[11px] text-foreground/55">{c.interesse}</p>
-                </div>
-              </div>
-              <span className="shrink-0 rounded-full bg-primary/10 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-primary">
-                {c.tipo}
-              </span>
-            </div>
-            <div className="mt-2 flex items-center justify-between border-t border-white/40 pt-2 text-[11px] text-foreground/60">
-              <div className="flex items-center gap-3">
-                <span className="flex items-center gap-1">
-                  <Phone className="size-3" />
-                  {c.telefone}
-                </span>
-              </div>
-              {c.orcamento > 0 && (
-                <span className="font-mono font-semibold text-foreground/80">
-                  {brl(c.orcamento, { compact: true })}
-                </span>
-              )}
-            </div>
-            {c.email && (
-              <div className="mt-1 flex items-center gap-1 text-[11px] text-foreground/55">
-                <Mail className="size-3" />
-                {c.email}
-              </div>
-            )}
-          </Link>
-        ))}
-        {list.length === 0 && (
-          <EmptyState
-            title="Nenhum cliente encontrado"
-            description="Tente buscar por outro nome ou cadastre um novo cliente."
-          />
-        )}
-      </div>
+      <ClientCreateCard onClick={() => setOpen(true)} isOpen={open} />
 
-      <Fab onClick={() => setOpen(true)} label="Novo cliente" />
-      <NovoClienteSheet open={open} onOpenChange={setOpen} />
-    </>
+      <ClientSummaryCards stats={stats} />
+
+      <section className="space-y-3">
+        <div className="flex items-center justify-between px-1">
+          <div>
+            <h2 className="text-sm font-semibold tracking-tight">Clientes</h2>
+            <p className="text-[11px] text-foreground/50">
+              {filteredClients.length} cadastro{filteredClients.length === 1 ? "" : "s"} no recorte
+              atual
+            </p>
+          </div>
+          <span className="rounded-full bg-white/55 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-teal-800">
+            Comercial
+          </span>
+        </div>
+        <ClientList clients={filteredClients} isLoading={false} error={null} />
+      </section>
+
+      {success && (
+        <div className="fixed left-1/2 top-5 z-[60] flex w-[calc(100%-2rem)] max-w-sm -translate-x-1/2 items-center gap-2 rounded-2xl border border-white/70 bg-white/88 px-4 py-3 text-sm font-semibold text-teal-900 shadow-xl shadow-stone-950/12 backdrop-blur-xl">
+          <CheckCircle2 className="size-4 text-emerald-700" />
+          Cadastro de {success} salvo.
+        </div>
+      )}
+
+      <ClientFormModal open={open} onOpenChange={setOpen} onSubmit={createClient} />
+    </div>
   );
 }

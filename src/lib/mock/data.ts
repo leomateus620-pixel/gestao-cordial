@@ -4,6 +4,7 @@ import casaBraganca from "@/assets/properties/casa-braganca.jpg";
 import loftVilaMadalena from "@/assets/properties/loft-vila-madalena.jpg";
 import coberturaItaim from "@/assets/properties/cobertura-itaim.jpg";
 import casaVilaNova from "@/assets/properties/casa-vila-nova.jpg";
+import type { Client } from "@/types/client";
 
 export type AgencyId = "cordial" | "morar";
 
@@ -165,7 +166,7 @@ export type Cliente = {
   rendaMensal?: number;
   preferenciaContato?: "WhatsApp" | "Telefone" | "E-mail";
   observacoes?: string;
-};
+} & Partial<Client>;
 
 export const clientesSeed: Cliente[] = [
   {
@@ -1622,8 +1623,24 @@ export const projecoesFinanceirasSeed: ProjecaoFinanceira[] = [
 ];
 
 export const dashboardComparativoCordialMorar = [
-  { imobiliaria: "Cordial", conversao: 28, atendimentos: 142, alugueis: 18, vendas: 9, receitaPrevista: 480000, origemContatos: "Instagram" },
-  { imobiliaria: "Morar", conversao: 22, atendimentos: 96, alugueis: 24, vendas: 4, receitaPrevista: 280000, origemContatos: "Indicação" },
+  {
+    imobiliaria: "Cordial",
+    conversao: 28,
+    atendimentos: 142,
+    alugueis: 18,
+    vendas: 9,
+    receitaPrevista: 480000,
+    origemContatos: "Instagram",
+  },
+  {
+    imobiliaria: "Morar",
+    conversao: 22,
+    atendimentos: 96,
+    alugueis: 24,
+    vendas: 4,
+    receitaPrevista: 280000,
+    origemContatos: "Indicação",
+  },
 ];
 
 export const dashboardEvolucaoMensal = [
