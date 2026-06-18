@@ -237,7 +237,14 @@ export function AgendaFormModal({
   function addChecklistItem() {
     setForm((current) => ({
       ...current,
-      checklist: [...current.checklist, { id: `check-${Date.now()}`, label: "", done: false }],
+      checklist: [
+        ...current.checklist,
+        {
+          id: `check-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+          label: "",
+          done: false,
+        },
+      ],
     }));
   }
 
