@@ -12,7 +12,6 @@ import {
   useAtendimentos,
   type AtendimentoFilters as AtendimentoFiltersState,
 } from "@/hooks/useAtendimentos";
-import { useApp } from "@/store/app-store";
 import type { AtendimentoCreateInput, AtendimentoStatus } from "@/types/atendimento";
 
 export const Route = createFileRoute("/_app/atendimentos")({
@@ -25,8 +24,7 @@ function Page() {
   const [query, setQuery] = useState("");
   const [filters, setFilters] = useState<AtendimentoFiltersState>(defaultAtendimentoFilters);
   const [feedback, setFeedback] = useState<string | null>(null);
-  const setAgency = useApp((state) => state.setAgency);
-  const { agency, filteredAtendimentos, stats, addAtendimento, convertAtendimentoToCliente } =
+  const { filteredAtendimentos, stats, addAtendimento, convertAtendimentoToCliente } =
     useAtendimentos(query, filters);
 
   useEffect(() => {
@@ -86,8 +84,6 @@ function Page() {
       <AtendimentoFilters
         query={query}
         onQueryChange={setQuery}
-        agency={agency}
-        onAgencyChange={setAgency}
         filters={filters}
         onFiltersChange={setFilters}
       />
