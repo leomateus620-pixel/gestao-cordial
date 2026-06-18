@@ -29,18 +29,22 @@ export function NovoClienteSheet({
     e.preventDefault();
     if (!nome.trim()) return;
     addCliente({
-      nome,
-      telefone,
+      fullName: nome,
+      phone: telefone,
       email,
-      tipo,
-      interesse,
-      orcamento,
-      imobiliaria,
-      origem,
-      documento,
-      rendaMensal,
-      preferenciaContato,
-      observacoes,
+      clientType: mapTipo(tipo),
+      contactPreference: mapPreferencia(preferenciaContato),
+      leadOrigin: mapOrigem(origem),
+      brand: imobiliaria,
+      purpose: tipo === "Locatário" ? "aluguel" : "compra",
+      propertyType: "apartamento",
+      bedrooms: "nao_aplica",
+      minBudget: orcamento || undefined,
+      maxBudget: orcamento || undefined,
+      approximateIncome: rendaMensal || undefined,
+      document: documento,
+      notes: observacoes || interesse,
+      status: "novo",
     });
     onOpenChange(false);
     setNome("");
@@ -183,4 +187,23 @@ export function NovoClienteSheet({
       </form>
     </FormSheet>
   );
+}
+
+function mapTipo(tipo: Cliente["tipo"]) {
+  if (tipo === "Locatário") return "locatario";
+  if (tipo === "Proprietário") return "proprietario";
+  return "comprador";
+}
+
+function mapPreferencia(preferencia: Cliente["preferenciaContato"]) {
+  if (preferencia === "Telefone") return "ligacao";
+  if (preferencia === "E-mail") return "email";
+  return "whatsapp";
+}
+
+function mapOrigem(origem: Cliente["origem"]) {
+  if (origem === "Instagram") return "instagram";
+  if (origem === "Indicação") return "indicacao";
+  if (origem === "Site") return "site";
+  return "whatsapp";
 }
