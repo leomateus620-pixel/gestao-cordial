@@ -286,7 +286,7 @@ export function AgendaFormModal({
         onSubmit={submit}
         className={cn(
           "agenda-form-modal relative flex h-dvh max-h-dvh w-full flex-col overflow-hidden border border-white/65 bg-background shadow-2xl shadow-stone-950/25",
-          "sm:h-auto sm:max-h-[92vh] sm:max-w-[920px] sm:rounded-[2rem]",
+          "sm:h-auto sm:max-h-[92vh] sm:max-w-[920px] sm:rounded-[2rem] sm:bg-background/96 sm:backdrop-blur-xl",
           closing && "agenda-form-modal--closing",
         )}
       >
