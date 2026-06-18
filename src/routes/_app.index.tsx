@@ -108,8 +108,10 @@ function Dashboard() {
       rawCorretores: s.corretores,
     })),
   );
-  const filterByAgency = <T extends { imobiliaria: "cordial" | "morar" }>(items: T[]) =>
-    agency === "todas" ? items : items.filter((item) => item.imobiliaria === agency);
+  const filterByAgency = <T extends { imobiliaria: "cordial" | "morar" | "ambas" }>(items: T[]) =>
+    agency === "todas"
+      ? items
+      : items.filter((item) => item.imobiliaria === agency || item.imobiliaria === "ambas");
   const atendimentos = filterByAgency(rawAtendimentos);
   const imoveis = filterByAgency(rawImoveis);
   const contratos = filterByAgency(rawContratos);
@@ -126,7 +128,7 @@ function Dashboard() {
   const contratosAtivos = contratos.filter((c) => c.status === "Ativo").length;
   const imoveisNegociacao =
     imoveis.filter((i) => i.status === "Reservado").length +
-    atendimentos.filter((a) => a.status === "Proposta").length;
+    atendimentos.filter((a) => a.status === "proposta_enviada").length;
   const visitasAgendadas = agenda.filter(
     (a) => a.tipo === "Visita" && new Date(a.data) >= new Date("2026-06-12T00:00:00"),
   ).length;
@@ -141,13 +143,13 @@ function Dashboard() {
     .reduce((sum, l) => sum + l.valor, 0);
   const vendasEmAndamento =
     contratos.filter((c) => c.tipo === "Venda" && c.status === "Pendente assinatura").length +
-    atendimentos.filter((a) => a.status === "Proposta").length;
+    atendimentos.filter((a) => a.status === "proposta_enviada").length;
   const alugueisFechados = contratos.filter(
     (c) => c.tipo === "Aluguel" && c.status === "Ativo",
   ).length;
   const desempenhoCorretores = corretores.reduce((sum, c) => sum + c.contratosFechados, 0);
   const atendPendentes = atendimentos.filter(
-    (a) => a.status !== "Fechado" && a.status !== "Perdido",
+    (a) => a.status !== "fechado" && a.status !== "perdido",
   ).length;
 
   /* Grupos de métricas para o carrossel mobile */

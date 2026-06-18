@@ -22,7 +22,7 @@ function Page() {
   const vendas = imoveis.filter((i) => i.finalidade === "Venda");
   const contratosVenda = contratos.filter((c) => c.tipo === "Venda");
   const pipeline = atendimentos.filter(
-    (a) => a.status === "Proposta" || a.status === "Em visita",
+    (a) => a.status === "proposta_enviada" || a.status === "visita_agendada",
   ).length;
   const vgv = vendas.reduce((total, imovel) => total + imovel.valor, 0);
 

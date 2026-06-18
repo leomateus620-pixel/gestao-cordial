@@ -1,46 +1,19 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
-import {
-  CalendarPlus,
-  CheckCircle2,
-  Clock3,
-  History,
-  Inbox,
-  Link2,
-  Search,
-  UserPlus,
-  UserRoundCog,
-  XCircle,
-} from "lucide-react";
-import { useApp, useFiltered } from "@/store/app-store";
-import { StatusBadge } from "@/components/status-badge";
-import { Fab } from "@/components/fab";
-import { NovoAtendimentoSheet } from "@/components/sheets/novo-atendimento";
-import { timeAgo } from "@/lib/format";
+import { useEffect, useState } from "react";
+import { CheckCircle2, Inbox, Workflow } from "lucide-react";
+import { AtendimentoCard } from "@/components/atendimentos/AtendimentoCard";
+import { AtendimentoCreateCard } from "@/components/atendimentos/AtendimentoCreateCard";
+import { AtendimentoFilters } from "@/components/atendimentos/AtendimentoFilters";
+import { AtendimentoFormModal } from "@/components/atendimentos/AtendimentoFormModal";
+import { AtendimentoSummaryCards } from "@/components/atendimentos/AtendimentoSummaryCards";
 import { EmptyState } from "@/components/shared/empty-state";
-import { cn } from "@/lib/utils";
-
-const statuses = [
-  "Todos",
-  "Novo",
-  "Em atendimento",
-  "Aguardando retorno",
-  "Visita agendada",
-  "Proposta enviada",
-  "Negociação",
-  "Fechado",
-  "Perdido",
-  "Arquivado",
-] as const;
-
-const actions = [
-  { label: "Transformar em cliente", icon: UserPlus },
-  { label: "Vincular corretor", icon: UserRoundCog },
-  { label: "Criar visita", icon: CalendarPlus },
-  { label: "Criar tarefa de retorno", icon: Clock3 },
-  { label: "Registrar histórico", icon: History },
-  { label: "Marcar motivo de perda", icon: XCircle },
-] as const;
+import {
+  defaultAtendimentoFilters,
+  useAtendimentos,
+  type AtendimentoFilters as AtendimentoFiltersState,
+} from "@/hooks/useAtendimentos";
+import { useApp } from "@/store/app-store";
+import type { AtendimentoCreateInput, AtendimentoStatus } from "@/types/atendimento";
 
 export const Route = createFileRoute("/_app/atendimentos")({
   head: () => ({ meta: [{ title: "Atendimentos — Gestão Cordial" }] }),
@@ -49,220 +22,125 @@ export const Route = createFileRoute("/_app/atendimentos")({
 
 function Page() {
   const [open, setOpen] = useState(false);
-  const [filtro, setFiltro] = useState<(typeof statuses)[number]>("Todos");
-  const [q, setQ] = useState("");
-  const atendimentos = useFiltered(useApp((s) => s.atendimentos));
-  const clientes = useApp((s) => s.clientes);
-  const corretores = useApp((s) => s.corretores);
-  const imoveis = useApp((s) => s.imoveis);
+  const [query, setQuery] = useState("");
+  const [filters, setFilters] = useState<AtendimentoFiltersState>(defaultAtendimentoFilters);
+  const [feedback, setFeedback] = useState<string | null>(null);
+  const setAgency = useApp((state) => state.setAgency);
+  const { agency, filteredAtendimentos, stats, addAtendimento, convertAtendimentoToCliente } =
+    useAtendimentos(query, filters);
 
-  const list = useMemo(() => {
-    return atendimentos.filter((a) => {
-      if (filtro !== "Todos" && a.status !== filtro) return false;
-      if (!q) return true;
-      const query = q.toLowerCase();
-      const cli = clientes.find((c) => c.id === a.clienteId)?.nome.toLowerCase() ?? "";
-      const im = imoveis.find((i) => i.id === a.imovelId)?.titulo.toLowerCase() ?? "";
-      return cli.includes(query) || im.includes(query) || a.status.toLowerCase().includes(query);
-    });
-  }, [atendimentos, filtro, q, clientes, imoveis]);
+  useEffect(() => {
+    if (!feedback) return;
+    const timer = window.setTimeout(() => setFeedback(null), 2800);
+    return () => window.clearTimeout(timer);
+  }, [feedback]);
 
-  const totals = statuses.slice(1).map((status) => ({
-    status,
-    total: atendimentos.filter((a) => a.status === status).length,
-  }));
+  function createAtendimento(input: AtendimentoCreateInput) {
+    addAtendimento(input);
+    setFeedback(`Atendimento de ${input.clienteNome} salvo.`);
+  }
+
+  function convertAtendimento(id: string) {
+    const clientId = convertAtendimentoToCliente(id);
+    setFeedback(
+      clientId
+        ? "Atendimento transformado em cliente com sucesso."
+        : "Não foi possível transformar este atendimento.",
+    );
+  }
+
+  function setStatus(status: AtendimentoStatus) {
+    setFilters((current) => ({ ...current, status }));
+  }
 
   return (
-    <>
-      {/* Hero */}
-      <section
-        className="mb-4 overflow-hidden rounded-3xl p-5 text-white"
-        style={{
-          background: "linear-gradient(135deg, #174d61 0%, #1e647d 45%, #2a3038 100%)",
-          boxShadow:
-            "0 24px 60px -20px rgba(23,27,33,0.45), inset 0 1px 0 rgba(255,255,255,0.08)",
-        }}
-      >
-        <div className="flex items-center gap-3">
-          <div
-            className="grid size-12 shrink-0 place-items-center rounded-2xl"
-            style={{ background: "rgba(95,175,199,0.2)" }}
-          >
-            <Inbox className="size-6" style={{ color: "#f0a86d" }} />
+    <div className="space-y-4">
+      <section className="relative overflow-hidden rounded-3xl bg-[linear-gradient(135deg,#174d61_0%,#1e647d_48%,#28333b_100%)] p-5 text-white shadow-[0_24px_60px_-24px_rgba(23,27,33,0.55)] sm:p-6">
+        <span className="absolute -right-10 -top-16 size-44 rounded-full bg-cyan-200/10 blur-3xl" />
+        <div className="relative flex items-start gap-3 sm:items-center">
+          <div className="grid size-12 shrink-0 place-items-center rounded-2xl bg-cyan-200/13 ring-1 ring-white/10">
+            <Inbox className="size-6 text-orange-300" />
           </div>
-          <div>
-            <p
-              className="text-[10px] font-bold uppercase tracking-[0.24em]"
-              style={{ color: "#f0a86d" }}
-            >
-              Funil de atendimento
+          <div className="min-w-0 flex-1">
+            <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-orange-300">
+              Central de entrada comercial
             </p>
-            <h1 className="text-xl font-semibold tracking-tight">Atendimentos</h1>
-            <p className="mt-0.5 text-[12px] text-white/60">
-              {list.length} resultado{list.length !== 1 ? "s" : ""} encontrado
-              {list.length !== 1 ? "s" : ""}
+            <h1 className="mt-0.5 text-xl font-semibold tracking-tight sm:text-2xl">
+              Atendimentos
+            </h1>
+            <p className="mt-1 max-w-2xl text-xs leading-5 text-white/64">
+              Do primeiro contato ao encaminhamento, com dados prontos para revelar o nicho real da
+              imobiliária.
             </p>
           </div>
+          <span className="hidden items-center gap-2 rounded-full bg-white/8 px-3 py-2 text-[10px] font-semibold text-white/68 ring-1 ring-white/10 md:flex">
+            <Workflow className="size-3.5 text-orange-300" />
+            Pré-atendimento · Corretor · Conversão
+          </span>
         </div>
       </section>
 
-      {/* Barra de busca */}
-      <div
-        className="mb-3 flex items-center gap-2 rounded-2xl px-3 py-2.5"
-        style={{
-          background: "rgba(255,255,255,0.65)",
-          backdropFilter: "blur(18px) saturate(145%)",
-          border: "1px solid rgba(255,255,255,0.6)",
-          boxShadow: "0 4px 16px -8px rgba(23,27,33,0.08)",
-        }}
-      >
-        <Search className="size-4 shrink-0 text-foreground/40" />
-        <input
-          value={q}
-          onChange={(e) => setQ(e.target.value)}
-          placeholder="Buscar cliente, imóvel ou status..."
-          className="flex-1 bg-transparent text-sm outline-none placeholder:text-foreground/35"
-        />
-      </div>
+      <AtendimentoFilters
+        query={query}
+        onQueryChange={setQuery}
+        agency={agency}
+        onAgencyChange={setAgency}
+        filters={filters}
+        onFiltersChange={setFilters}
+      />
 
-      {/* Filtros de status */}
-      <div className="no-scrollbar -mx-4 mb-4 flex gap-2 overflow-x-auto px-4">
-        {statuses.map((s) => (
-          <button
-            key={s}
-            onClick={() => setFiltro(s)}
-            className={cn(
-              "shrink-0 rounded-full px-3 py-1.5 text-xs font-semibold transition-all",
-              filtro === s
-                ? "bg-primary text-white shadow-md shadow-primary/25"
-                : "bg-white/60 text-foreground/60 hover:bg-white/80",
-            )}
-            style={
-              filtro !== s
-                ? {
-                    backdropFilter: "blur(12px)",
-                    border: "1px solid rgba(255,255,255,0.55)",
-                  }
-                : undefined
-            }
-          >
-            {s}
-          </button>
-        ))}
-      </div>
+      <AtendimentoCreateCard onClick={() => setOpen(true)} isOpen={open} />
 
-      {/* Totais por status */}
-      <div className="mb-4 grid grid-cols-3 gap-2 md:grid-cols-9">
-        {totals.map((item) => (
-          <button
-            key={item.status}
-            onClick={() => setFiltro(item.status as (typeof statuses)[number])}
-            className={cn(
-              "rounded-2xl p-2.5 text-center transition-all hover:scale-[1.02]",
-              filtro === item.status ? "bg-primary/12 ring-1 ring-primary/30" : "",
-            )}
-            style={{
-              background:
-                filtro === item.status
-                  ? "rgba(30,100,125,0.1)"
-                  : "rgba(255,255,255,0.55)",
-              backdropFilter: "blur(14px) saturate(140%)",
-              border: "1px solid rgba(255,255,255,0.55)",
-              boxShadow: "0 4px 12px -6px rgba(23,27,33,0.08)",
-            }}
-          >
-            <p className="text-base font-bold text-primary">{item.total}</p>
-            <p className="mt-0.5 truncate text-[9px] font-semibold uppercase tracking-tighter text-foreground/45">
-              {item.status}
+      <AtendimentoSummaryCards
+        stats={stats}
+        activeStatus={filters.status}
+        onStatusChange={setStatus}
+      />
+
+      <section className="space-y-3">
+        <div className="flex items-center justify-between gap-3 px-1">
+          <div>
+            <h2 className="text-sm font-semibold tracking-tight">Fila de atendimentos</h2>
+            <p className="text-[11px] text-foreground/50">
+              {filteredAtendimentos.length} atendimento
+              {filteredAtendimentos.length === 1 ? "" : "s"} no recorte atual
             </p>
-          </button>
-        ))}
-      </div>
+          </div>
+          <span className="rounded-full bg-white/55 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-teal-800">
+            Operação comercial
+          </span>
+        </div>
 
-      {/* Lista de atendimentos */}
-      <div className="space-y-3">
-        {list.map((a) => {
-          const cli = clientes.find((c) => c.id === a.clienteId);
-          const cor = corretores.find((c) => c.id === a.corretorId);
-          const im = imoveis.find((i) => i.id === a.imovelId);
-          return (
-            <div
-              key={a.id}
-              className="rounded-2xl p-4 transition-all hover:scale-[1.005]"
-              style={{
-                background:
-                  "linear-gradient(160deg, rgba(255,255,255,0.72) 0%, rgba(255,255,255,0.52) 100%)",
-                backdropFilter: "blur(18px) saturate(145%)",
-                border: "1px solid rgba(255,255,255,0.6)",
-                boxShadow:
-                  "0 8px 24px -8px rgba(23,27,33,0.1), inset 0 1px 0 rgba(255,255,255,0.8)",
-              }}
-            >
-              <div className="flex items-start justify-between gap-3">
-                <div className="flex min-w-0 items-start gap-3">
-                  <div className="grid size-10 shrink-0 place-items-center rounded-full bg-primary/12 text-[11px] font-bold text-primary">
-                    {cli?.iniciais}
-                  </div>
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-semibold">{cli?.nome}</p>
-                    <p className="truncate text-[11px] text-foreground/55">{im?.titulo}</p>
-                    <p className="mt-0.5 text-[10px] text-foreground/40">
-                      Corretor: {cor?.nome} · Origem: {a.origem ?? "WhatsApp"}
-                    </p>
-                  </div>
-                </div>
-                <div className="shrink-0 text-right">
-                  <StatusBadge status={a.status} />
-                  <p className="mt-1 font-mono text-[9px] text-foreground/40">
-                    {timeAgo(a.criadoEm)}
-                  </p>
-                </div>
-              </div>
-
-              {a.observacoes && (
-                <p className="mt-3 rounded-xl bg-white/45 p-2.5 text-[11px] leading-relaxed text-foreground/60">
-                  {a.observacoes}
-                </p>
-              )}
-
-              <div className="mt-3 grid grid-cols-2 gap-2 md:grid-cols-3">
-                {actions.map(({ label, icon: Icon }) => (
-                  <button
-                    key={label}
-                    className="flex items-center gap-1.5 rounded-xl bg-white/50 px-2.5 py-2 text-left text-[10px] font-semibold text-foreground/60 transition-all hover:bg-primary/10 hover:text-primary hover:scale-[1.02]"
-                  >
-                    <Icon className="size-3.5 shrink-0" />
-                    <span className="truncate">{label}</span>
-                  </button>
-                ))}
-              </div>
-
-              {a.status === "Perdido" && (
-                <div className="mt-3 flex items-center gap-1.5 rounded-xl bg-destructive/8 px-3 py-2 text-[10px] font-medium text-destructive">
-                  <Link2 className="size-3 shrink-0" />
-                  Motivo: {a.motivoPerda ?? "Preço acima do orçamento"}
-                </div>
-              )}
-              {a.status === "Fechado" && (
-                <div className="mt-3 flex items-center gap-1.5 rounded-xl bg-emerald-500/8 px-3 py-2 text-[10px] font-medium text-emerald-700">
-                  <CheckCircle2 className="size-3 shrink-0" />
-                  Cliente pronto para contrato e comissão.
-                </div>
-              )}
-            </div>
-          );
-        })}
-        {list.length === 0 && (
+        {filteredAtendimentos.length > 0 ? (
+          <div className="grid gap-3 xl:grid-cols-2">
+            {filteredAtendimentos.map((atendimento) => (
+              <AtendimentoCard
+                key={atendimento.id}
+                atendimento={atendimento}
+                onConvert={convertAtendimento}
+                onMockAction={(action, contactName) =>
+                  setFeedback(`${action} para ${contactName}: fluxo preparado no modo local.`)
+                }
+              />
+            ))}
+          </div>
+        ) : (
           <EmptyState
             title="Nenhum atendimento encontrado"
-            description="Ajuste a busca ou o status selecionado."
+            description="Ajuste a busca ou os filtros. Você também pode registrar uma nova entrada comercial acima."
             icon={<Inbox className="size-5" />}
           />
         )}
-      </div>
+      </section>
 
-      <Fab onClick={() => setOpen(true)} label="Novo atendimento" />
-      <NovoAtendimentoSheet open={open} onOpenChange={setOpen} />
-    </>
+      {feedback && (
+        <div className="fixed left-1/2 top-5 z-[70] flex w-[calc(100%-2rem)] max-w-md -translate-x-1/2 items-center gap-2 rounded-2xl border border-white/70 bg-white/90 px-4 py-3 text-sm font-semibold text-teal-900 shadow-xl shadow-stone-950/12 backdrop-blur-xl">
+          <CheckCircle2 className="size-4 shrink-0 text-emerald-700" />
+          {feedback}
+        </div>
+      )}
+
+      <AtendimentoFormModal open={open} onOpenChange={setOpen} onSubmit={createAtendimento} />
+    </div>
   );
 }
