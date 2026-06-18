@@ -762,7 +762,7 @@ export function AgendaFormModal({
               {canEdit ? "Cancelar" : "Fechar"}
             </button>
             {isEditing && canEdit && (
-              <div className="hidden items-center gap-1.5 lg:flex">
+              <div className="flex flex-wrap items-center gap-1.5">
                 <QuickAction
                   label="Concluir"
                   icon={Check}
