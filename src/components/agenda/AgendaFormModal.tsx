@@ -106,12 +106,19 @@ export function AgendaFormModal({
   const [errors, setErrors] = useState<ReturnType<typeof validateAgendaEvent>>({});
   const [closing, setClosing] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [mounted, setMounted] = useState(open);
+
+  useEffect(() => {
+    if (open) {
+      setMounted(true);
+      setClosing(false);
+    }
+  }, [open]);
 
   useEffect(() => {
     if (!open) return;
     setForm(initialForm(event, currentUser));
     setErrors({});
-    setClosing(false);
   }, [currentUser, event, open]);
 
   useEffect(() => {
@@ -121,6 +128,24 @@ export function AgendaFormModal({
     return () => {
       document.body.style.overflow = previous;
     };
+  }, [open]);
+
+  useEffect(() => {
+    if (!open && mounted && !closing) {
+      setClosing(true);
+      const timer = window.setTimeout(() => setMounted(false), 200);
+      return () => window.clearTimeout(timer);
+    }
+  }, [open, mounted, closing]);
+
+  useEffect(() => {
+    if (!open || typeof window === "undefined") return;
+    function onKey(event: KeyboardEvent) {
+      if (event.key === "Escape") requestClose();
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
   const selectedClient = clients.find((client) => client.id === form.clienteId);
@@ -134,7 +159,7 @@ export function AgendaFormModal({
     [form.participantesIds, people],
   );
 
-  if (!open || typeof document === "undefined") return null;
+  if (!mounted || typeof document === "undefined") return null;
 
   function requestClose() {
     if (closing) return;
@@ -212,7 +237,14 @@ export function AgendaFormModal({
   function addChecklistItem() {
     setForm((current) => ({
       ...current,
-      checklist: [...current.checklist, { id: `check-${Date.now()}`, label: "", done: false }],
+      checklist: [
+        ...current.checklist,
+        {
+          id: `check-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+          label: "",
+          done: false,
+        },
+      ],
     }));
   }
 
@@ -261,7 +293,7 @@ export function AgendaFormModal({
         onSubmit={submit}
         className={cn(
           "agenda-form-modal relative flex h-dvh max-h-dvh w-full flex-col overflow-hidden border border-white/65 bg-background shadow-2xl shadow-stone-950/25",
-          "sm:h-auto sm:max-h-[92vh] sm:max-w-[920px] sm:rounded-[2rem]",
+          "sm:h-auto sm:max-h-[92vh] sm:max-w-[920px] sm:rounded-[2rem] sm:bg-background/96 sm:backdrop-blur-xl",
           closing && "agenda-form-modal--closing",
         )}
       >
@@ -737,7 +769,7 @@ export function AgendaFormModal({
               {canEdit ? "Cancelar" : "Fechar"}
             </button>
             {isEditing && canEdit && (
-              <div className="hidden items-center gap-1.5 lg:flex">
+              <div className="flex flex-wrap items-center gap-1.5">
                 <QuickAction
                   label="Concluir"
                   icon={Check}
