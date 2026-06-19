@@ -86,7 +86,10 @@ const checklistLabels: Array<{ key: keyof AgenciamentoChecklist; label: string }
 ];
 
 const inputClassName =
-  "h-11 w-full rounded-2xl border border-white/[0.65] bg-white/[0.72] px-3 text-sm outline-none transition-all placeholder:text-foreground/35 focus:border-primary/30 focus:bg-white/[0.86] focus:ring-2 focus:ring-primary/10";
+  "h-11 w-full rounded-2xl border border-foreground/12 bg-white px-3 text-sm text-foreground outline-none transition-all placeholder:text-foreground/45 focus:border-primary/55 focus:ring-2 focus:ring-primary/20";
+
+const selectTriggerClassName =
+  "h-11 rounded-2xl border border-foreground/12 bg-white text-foreground focus:ring-2 focus:ring-primary/20";
 
 function toDateInput(value?: string) {
   if (!value) return new Date().toISOString().slice(0, 10);
@@ -279,30 +282,30 @@ export function AgenciamentoFormModal({
       <form
         onSubmit={handleSubmit}
         className={cn(
-          "flex max-h-[100dvh] w-full max-w-5xl flex-col overflow-hidden rounded-t-[2rem] bg-[#f7f3ed] shadow-[0_30px_100px_-38px_rgba(0,0,0,0.55)] ring-1 ring-white/55 sm:max-h-[92dvh] sm:rounded-[2rem]",
+          "flex max-h-[100dvh] w-full max-w-5xl flex-col overflow-hidden rounded-t-[2rem] bg-[#f1ebe0] shadow-[0_30px_100px_-38px_rgba(0,0,0,0.55)] ring-1 ring-foreground/8 sm:max-h-[92dvh] sm:rounded-[2rem]",
           closing
             ? "animate-out slide-out-to-bottom-6 zoom-out-95 duration-200"
             : "animate-in slide-in-from-bottom-5 zoom-in-95 duration-200",
         )}
       >
-        <div className="border-b border-white/60 bg-white/45 px-4 py-4 sm:px-6">
+        <div className="border-b border-foreground/10 bg-white/85 px-4 py-4 backdrop-blur sm:px-6">
           <div className="flex items-start justify-between gap-4">
             <div className="min-w-0">
-              <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-primary/70">
+              <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-primary">
                 {isEditing ? "Editar agenciamento" : "Novo agenciamento"}
               </p>
-              <h2 className="mt-1 text-xl font-black tracking-tight sm:text-2xl">
-                {isEditing ? "Atualizar checklist e dados" : "Cadastrar imovel captado"}
+              <h2 className="mt-1 text-xl font-black tracking-tight text-foreground sm:text-2xl">
+                {isEditing ? "Atualizar checklist e dados" : "Cadastrar imóvel captado"}
               </h2>
-              <p className="mt-1 max-w-2xl text-sm text-foreground/55">
-                Registre os dados essenciais e acompanhe fotos, placa, Drive, site e validacao.
+              <p className="mt-1 max-w-2xl text-sm text-foreground/65">
+                Registre os dados essenciais e acompanhe fotos, placa, Drive, site e validação.
               </p>
             </div>
             <button
               type="button"
               onClick={requestClose}
-              className="grid size-10 shrink-0 place-items-center rounded-2xl bg-white/70 text-foreground/55 ring-1 ring-foreground/5 transition-all hover:text-primary active:scale-95"
-              aria-label="Fechar formulario"
+              className="grid size-10 shrink-0 place-items-center rounded-2xl bg-white text-foreground/65 ring-1 ring-foreground/10 transition-all hover:text-primary active:scale-95"
+              aria-label="Fechar formulário"
             >
               <X className="size-5" />
             </button>
@@ -319,16 +322,16 @@ export function AgenciamentoFormModal({
 
           <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(320px,0.78fr)]">
             <div className="space-y-4">
-              <FormSection title="Dados do imovel" step="01">
+              <FormSection title="Dados do imóvel" step="01">
                 <div className="grid gap-3 md:grid-cols-2">
-                  <Field label="Tipo de imovel" error={errors.tipoImovel}>
+                  <Field label="Tipo de imóvel" error={errors.tipoImovel}>
                     <Select
                       value={form.tipoImovel}
                       onValueChange={(value) =>
                         update("tipoImovel", value as AgenciamentoTipoImovel)
                       }
                     >
-                      <SelectTrigger className="h-11 rounded-2xl border-white/[0.65] bg-white/[0.72]">
+                      <SelectTrigger className={selectTriggerClassName}>
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -340,14 +343,14 @@ export function AgenciamentoFormModal({
                       </SelectContent>
                     </Select>
                   </Field>
-                  <Field label="Imobiliaria" error={errors.imobiliaria}>
+                  <Field label="Imobiliária" error={errors.imobiliaria}>
                     <Select
                       value={form.imobiliaria}
                       onValueChange={(value) =>
                         update("imobiliaria", value as AgenciamentoImobiliaria)
                       }
                     >
-                      <SelectTrigger className="h-11 rounded-2xl border-white/[0.65] bg-white/[0.72]">
+                      <SelectTrigger className={selectTriggerClassName}>
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -361,17 +364,17 @@ export function AgenciamentoFormModal({
                   </Field>
                 </div>
 
-                <Field label="Endereco do imovel" error={errors.endereco}>
+                <Field label="Endereço do imóvel" error={errors.endereco}>
                   <input
                     value={form.endereco}
                     onChange={(event) => update("endereco", event.target.value)}
                     className={inputClassName}
-                    placeholder="Rua, numero, complemento"
+                    placeholder="Rua, número, complemento"
                   />
                 </Field>
 
                 <div className="grid gap-3 md:grid-cols-2">
-                  <Field label="Bairro/regiao">
+                  <Field label="Bairro/região">
                     <input
                       value={form.bairro}
                       onChange={(event) => update("bairro", event.target.value)}
@@ -389,19 +392,19 @@ export function AgenciamentoFormModal({
                   </Field>
                 </div>
 
-                <Field label="Descricao curta">
+                <Field label="Descrição curta">
                   <textarea
                     value={form.descricaoImovel}
                     onChange={(event) => update("descricaoImovel", event.target.value)}
                     className={cn(inputClassName, "h-auto min-h-20 resize-none py-3")}
-                    placeholder="Resumo rapido para a gestao entender o imovel."
+                    placeholder="Resumo rápido para a gestão entender o imóvel."
                   />
                 </Field>
               </FormSection>
 
-              <FormSection title="Proprietario" step="02">
+              <FormSection title="Proprietário" step="02">
                 <div className="grid gap-3 md:grid-cols-2">
-                  <Field label="Nome do proprietario" error={errors.proprietarioNome}>
+                  <Field label="Nome do proprietário" error={errors.proprietarioNome}>
                     <input
                       value={form.proprietarioNome}
                       onChange={(event) => update("proprietarioNome", event.target.value)}
@@ -432,7 +435,7 @@ export function AgenciamentoFormModal({
                         )
                       }
                     >
-                      <SelectTrigger className="h-11 rounded-2xl border-white/[0.65] bg-white/[0.72]">
+                      <SelectTrigger className={selectTriggerClassName}>
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -444,26 +447,26 @@ export function AgenciamentoFormModal({
                       </SelectContent>
                     </Select>
                   </Field>
-                  <Field label="Observacoes do proprietario">
+                  <Field label="Observações do proprietário">
                     <input
                       value={form.proprietarioObservacoes}
                       onChange={(event) => update("proprietarioObservacoes", event.target.value)}
                       className={inputClassName}
-                      placeholder="Preferencias de contato, restricoes, combinados..."
+                      placeholder="Preferências de contato, restrições, combinados..."
                     />
                   </Field>
                 </div>
               </FormSection>
 
-              <FormSection title="Responsavel e data" step="03">
+              <FormSection title="Responsável e data" step="03">
                 <div className="grid gap-3 md:grid-cols-2">
-                  <Field label="Corretor responsavel" error={errors.corretorId}>
+                  <Field label="Corretor responsável" error={errors.corretorId}>
                     <Select
                       value={form.corretorId}
                       onValueChange={selectBroker}
                       disabled={!canManage}
                     >
-                      <SelectTrigger className="h-11 rounded-2xl border-white/[0.65] bg-white/[0.72]">
+                      <SelectTrigger className={selectTriggerClassName}>
                         <SelectValue placeholder="Selecione" />
                       </SelectTrigger>
                       <SelectContent>
@@ -491,7 +494,7 @@ export function AgenciamentoFormModal({
                       value={form.origem}
                       onValueChange={(value) => update("origem", value as AgenciamentoOrigem)}
                     >
-                      <SelectTrigger className="h-11 rounded-2xl border-white/[0.65] bg-white/[0.72]">
+                      <SelectTrigger className={selectTriggerClassName}>
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -508,7 +511,7 @@ export function AgenciamentoFormModal({
                       value={form.status}
                       onValueChange={(value) => update("status", value as AgenciamentoStatus)}
                     >
-                      <SelectTrigger className="h-11 rounded-2xl border-white/[0.65] bg-white/[0.72]">
+                      <SelectTrigger className={selectTriggerClassName}>
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -533,24 +536,35 @@ export function AgenciamentoFormModal({
                 <div className="space-y-2">
                   {checklistLabels.map((item) => {
                     const adminOnly = item.key === "validado";
+                    const done = form.checklist[item.key];
                     return (
                       <label
                         key={item.key}
                         className={cn(
-                          "flex items-center justify-between gap-3 rounded-2xl bg-white/[0.62] px-3 py-3 ring-1 ring-white/70",
+                          "flex items-center justify-between gap-3 rounded-2xl px-3 py-3 ring-1 transition-colors",
+                          done
+                            ? "bg-emerald-500/10 ring-emerald-500/25"
+                            : "bg-white ring-foreground/10",
                           adminOnly && !canManage && "opacity-65",
                         )}
                       >
                         <span className="min-w-0">
-                          <span className="block text-sm font-semibold">{item.label}</span>
+                          <span className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                            {item.label}
+                            {adminOnly && (
+                              <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[9px] font-black uppercase tracking-[0.16em] text-primary">
+                                Admin
+                              </span>
+                            )}
+                          </span>
                           {adminOnly && (
-                            <span className="mt-0.5 block text-[11px] text-foreground/48">
+                            <span className="mt-0.5 block text-[11px] text-foreground/55">
                               Apenas administradores
                             </span>
                           )}
                         </span>
                         <Switch
-                          checked={form.checklist[item.key]}
+                          checked={done}
                           disabled={adminOnly && !canManage}
                           onCheckedChange={(checked) => updateChecklist(item.key, checked)}
                         />
@@ -560,7 +574,7 @@ export function AgenciamentoFormModal({
                 </div>
               </FormSection>
 
-              <FormSection title="Links e observacoes" step="05">
+              <FormSection title="Links e observações" step="05">
                 <Field label="Link da pasta do Drive" error={errors.driveFolderUrl}>
                   <input
                     value={form.driveFolderUrl}
@@ -569,7 +583,7 @@ export function AgenciamentoFormModal({
                     placeholder="https://drive.google.com/..."
                   />
                 </Field>
-                <Field label="Link do imovel no site" error={errors.siteUrl}>
+                <Field label="Link do imóvel no site" error={errors.siteUrl}>
                   <input
                     value={form.siteUrl}
                     onChange={(event) => update("siteUrl", event.target.value)}
@@ -577,12 +591,12 @@ export function AgenciamentoFormModal({
                     placeholder="https://..."
                   />
                 </Field>
-                <Field label="Observacoes internas">
+                <Field label="Observações internas">
                   <textarea
                     value={form.observacoesInternas}
                     onChange={(event) => update("observacoesInternas", event.target.value)}
                     className={cn(inputClassName, "h-auto min-h-28 resize-none py-3")}
-                    placeholder="Pendencias, combinados, validacoes e contexto para gestao."
+                    placeholder="Pendências, combinados, validações e contexto para gestão."
                   />
                 </Field>
               </FormSection>
@@ -590,22 +604,25 @@ export function AgenciamentoFormModal({
           </div>
         </div>
 
-        <div className="flex flex-col gap-2 border-t border-white/60 bg-white/45 px-4 py-3 sm:flex-row sm:items-center sm:justify-end sm:px-6">
+        <div
+          className="sticky bottom-0 z-10 flex flex-col gap-2 border-t border-foreground/10 bg-white/95 px-4 py-3 backdrop-blur sm:flex-row sm:items-center sm:justify-end sm:px-6"
+          style={{ paddingBottom: "max(env(safe-area-inset-bottom), 0.75rem)" }}
+        >
           <Button
             type="button"
-            variant="outline"
-            className="h-11 rounded-2xl border-white/[0.65] bg-white/[0.66]"
+            variant="ghost"
+            className="h-11 rounded-2xl text-foreground/70 hover:text-foreground"
             onClick={requestClose}
           >
             Cancelar
           </Button>
           <Button
             type="submit"
-            className="h-11 rounded-2xl bg-primary text-white"
+            className="h-11 rounded-2xl bg-[#174d61] text-white hover:bg-[#1e647d]"
             disabled={saving}
           >
             {saving ? <Check className="size-4" /> : <Save className="size-4" />}
-            {isEditing ? "Salvar alteracoes" : "Cadastrar agenciamento"}
+            {isEditing ? "Salvar alterações" : "Cadastrar agenciamento"}
             <ChevronRight className="size-4" />
           </Button>
         </div>
@@ -626,12 +643,12 @@ function FormSection({
   children: ReactNode;
 }) {
   return (
-    <section className="rounded-[1.35rem] border border-white/60 bg-white/[0.48] p-4 shadow-[0_14px_34px_-28px_rgba(23,27,33,0.24)]">
+    <section className="rounded-[1.35rem] border border-foreground/8 bg-white p-4 shadow-[0_14px_34px_-28px_rgba(23,27,33,0.24)]">
       <div className="mb-3 flex items-center gap-2">
-        <span className="grid size-8 place-items-center rounded-xl bg-primary/10 font-mono text-[11px] font-black text-primary">
+        <span className="grid size-8 place-items-center rounded-xl bg-primary text-white font-mono text-[11px] font-black">
           {step}
         </span>
-        <h3 className="text-sm font-bold tracking-tight">{title}</h3>
+        <h3 className="text-sm font-bold tracking-tight text-foreground">{title}</h3>
       </div>
       <div className="space-y-3">{children}</div>
     </section>
@@ -641,7 +658,7 @@ function FormSection({
 function Field({ label, error, children }: { label: string; error?: string; children: ReactNode }) {
   return (
     <label className="block min-w-0">
-      <span className="mb-1.5 block text-[10px] font-bold uppercase tracking-[0.16em] text-foreground/45">
+      <span className="mb-1.5 block text-[11px] font-bold uppercase tracking-[0.16em] text-foreground/65">
         {label}
       </span>
       {children}

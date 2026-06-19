@@ -1,8 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { ClipboardCheck, LockKeyhole } from "lucide-react";
+import { ClipboardCheck, LockKeyhole, Plus } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 import { AgenciamentoCard } from "@/components/agenciamentos/AgenciamentoCard";
-import { AgenciamentoCreateCard } from "@/components/agenciamentos/AgenciamentoCreateCard";
 import { AgenciamentoDetailDrawer } from "@/components/agenciamentos/AgenciamentoDetailDrawer";
 import { AgenciamentoFilters } from "@/components/agenciamentos/AgenciamentoFilters";
 import { AgenciamentoFormModal } from "@/components/agenciamentos/AgenciamentoFormModal";
@@ -46,13 +45,13 @@ function Page() {
     ? {
         eyebrow: "Controle de agenciamentos",
         title: "Agenciamentos",
-        subtitle: "Acompanhe imoveis captados pela equipe e valide fotos, placas, site e Drive.",
+        subtitle: "Acompanhe imóveis captados pela equipe e valide fotos, placas, site e Drive.",
       }
     : {
-        eyebrow: "Minha evolucao",
+        eyebrow: "Minha evolução",
         title: "Agenciamentos",
         subtitle:
-          "Acompanhe seus imoveis agenciados, pendencias de fotos, placas, Drive e validacao.",
+          "Acompanhe seus imóveis agenciados, pendências de fotos, placas, Drive e validação.",
       };
 
   const selectedCanEdit = useMemo(
@@ -122,7 +121,7 @@ function Page() {
         </div>
         <h1 className="text-xl font-bold tracking-tight">Acesso restrito</h1>
         <p className="mt-2 text-sm leading-relaxed text-foreground/58">
-          Agenciamentos ficam disponiveis para administradores e corretores autorizados.
+          Agenciamentos ficam disponíveis para administradores e corretores autorizados.
         </p>
       </section>
     );
@@ -152,13 +151,25 @@ function Page() {
                 {pageCopy.subtitle}
               </p>
             </div>
-            <div className="grid grid-cols-3 gap-2 sm:w-fit">
-              <HeroPill label="No mes" value={String(summary.mes).padStart(2, "0")} />
-              <HeroPill
-                label="Pendentes"
-                value={String(summary.pendentesValidacao).padStart(2, "0")}
-              />
-              <HeroPill label="Checklist" value={`${summary.percentualChecklistMedio}%`} accent />
+            <div className="flex flex-col gap-3 lg:items-end">
+              <div className="grid grid-cols-3 gap-2 sm:w-fit">
+                <HeroPill label="No mês" value={String(summary.mes).padStart(2, "0")} />
+                <HeroPill
+                  label="Pendentes"
+                  value={String(summary.pendentesValidacao).padStart(2, "0")}
+                />
+                <HeroPill label="Checklist" value={`${summary.percentualChecklistMedio}%`} accent />
+              </div>
+              <button
+                type="button"
+                onClick={openCreate}
+                disabled={!canCreate}
+                style={{ touchAction: "manipulation" }}
+                className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-white px-4 py-2.5 text-sm font-bold text-[#174d61] shadow-[0_14px_30px_-18px_rgba(0,0,0,0.55)] ring-1 ring-white/40 transition-all hover:bg-cyan-50 active:scale-[0.985] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-200/70 disabled:cursor-not-allowed disabled:opacity-55 lg:w-auto"
+              >
+                <Plus className="size-4" />
+                Cadastrar agenciamento
+              </button>
             </div>
           </div>
         </section>
@@ -170,8 +181,6 @@ function Page() {
         )}
 
         <AgenciamentoSummaryCards summary={summary} variant={isAdmin ? "admin" : "corretor"} />
-
-        <AgenciamentoCreateCard onCreate={openCreate} disabled={!canCreate} />
 
         <AgenciamentoFilters
           filters={filters}

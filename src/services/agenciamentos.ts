@@ -328,7 +328,7 @@ export function filterAgenciamentos(
           item.observacoesInternas,
           getAgenciamentoTipoLabel(item.tipoImovel),
         ]
-          .filter(Boolean)
+          .filter((value): value is string => Boolean(value))
           .some((value) => value.toLowerCase().includes(query));
 
       return (

@@ -47,8 +47,8 @@ const checklistItems: Array<{
   { key: "fotosDrive", label: "Drive", icon: HardDrive },
   { key: "placaInstalada", label: "Placa", icon: MapPinned },
   { key: "cadastradoSite", label: "Site", icon: ClipboardCheck },
-  { key: "videoRealizado", label: "Video", icon: Video },
-  { key: "validado", label: "Validacao", icon: BadgeCheck },
+  { key: "videoRealizado", label: "Vídeo", icon: Video },
+  { key: "validado", label: "Validação", icon: BadgeCheck },
 ];
 
 function AgenciamentoCardComponent({
@@ -183,8 +183,8 @@ function AgenciamentoCardComponent({
         style={{ transform: "translateZ(16px)" }}
       >
         <div className="min-w-0 rounded-2xl bg-white/[0.58] p-3 ring-1 ring-white/60">
-          <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-foreground/42">
-            Proprietario
+          <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-foreground/55">
+            Proprietário
           </p>
           <p className="mt-1 truncate text-sm font-semibold text-foreground">
             {agenciamento.proprietarioNome}
@@ -196,7 +196,7 @@ function AgenciamentoCardComponent({
 
         <div className="min-w-0 rounded-2xl bg-white/[0.58] p-3 ring-1 ring-white/60">
           <div className="flex items-center justify-between gap-3">
-            <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-foreground/42">
+            <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-foreground/55">
               Checklist
             </p>
             <span className="font-mono text-xs font-black text-primary">
