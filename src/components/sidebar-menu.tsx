@@ -9,6 +9,8 @@ import {
   ClipboardCheck,
   ClipboardList,
   FileText,
+  ExternalLink,
+  Globe,
   Handshake,
   Home,
   House,
@@ -33,6 +35,8 @@ import { cn } from "@/lib/utils";
 export type NavigationChild = Pick<ModuleItem, "to" | "label" | "module" | "exact"> & {
   key?: string;
   icon: LucideIcon;
+  href?: string;
+  external?: boolean;
 };
 
 export type NavigationGroup = {
@@ -82,15 +86,25 @@ const navigationEntries: NavigationEntry[] = [
   {
     type: "group",
     label: "Imóveis",
-    desc: "Carteira e status",
+    desc: "Sites das imobiliárias",
     icon: Building2,
     children: [
-      { to: "/imoveis", label: "Todos os imóveis", icon: House, module: "imoveis" },
       {
-        key: "status-imoveis",
+        key: "site-cordial",
         to: "/imoveis",
-        label: "Disponibilidade / status",
-        icon: ClipboardList,
+        href: "https://www.cordialimoveis.com/",
+        external: true,
+        label: "Site Cordial Imóveis",
+        icon: Globe,
+        module: "imoveis",
+      },
+      {
+        key: "site-morar",
+        to: "/imoveis",
+        href: "https://www.imobiliariamorarimoveis.com.br/",
+        external: true,
+        label: "Site Morar Imóveis",
+        icon: Globe,
         module: "imoveis",
       },
       {
