@@ -373,28 +373,47 @@ export function SidebarMenu({
                   <CollapsibleContent className="overflow-hidden data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
                     <div className="ml-[1.6rem] mt-1 space-y-1 border-l border-cyan-200/12 pl-3">
                       {entry.children.map((child) => {
-                        const active = isRouteActive(pathname, child);
+                        const isExternal = Boolean(child.external && child.href);
+                        const active = !isExternal && isRouteActive(pathname, child);
                         const ChildIcon = child.icon;
+                        const childClass = cn(
+                          "group/sub relative flex items-center gap-2.5 rounded-xl px-3 py-2 text-[13px] font-medium transition-all duration-200 active:scale-[0.99]",
+                          active
+                            ? "bg-white/[0.09] text-white shadow-[inset_2px_0_0_var(--system-primary-light)]"
+                            : "text-white/58 hover:bg-white/[0.055] hover:text-white/88",
+                        );
+                        const iconClass = cn(
+                          "size-3.5 shrink-0 transition-colors",
+                          active
+                            ? "text-cyan-200"
+                            : "text-white/38 group-hover/sub:text-cyan-100/75",
+                        );
+                        if (isExternal) {
+                          return (
+                            <a
+                              key={child.key ?? child.href}
+                              href={child.href}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              onClick={onNavigate}
+                              className={childClass}
+                            >
+                              <ChildIcon className={iconClass} strokeWidth={1.9} />
+                              <span className="flex-1 truncate">{child.label}</span>
+                              <ExternalLink className="size-3 text-white/35" />
+                            </a>
+                          );
+                        }
                         return (
                           <Link
                             key={child.key ?? child.to}
                             to={child.to as never}
                             onClick={onNavigate}
                             aria-current={active ? "page" : undefined}
-                            className={cn(
-                              "group/sub relative flex items-center gap-2.5 rounded-xl px-3 py-2 text-[13px] font-medium transition-all duration-200 active:scale-[0.99]",
-                              active
-                                ? "bg-white/[0.09] text-white shadow-[inset_2px_0_0_var(--system-primary-light)]"
-                                : "text-white/58 hover:bg-white/[0.055] hover:text-white/88",
-                            )}
+                            className={childClass}
                           >
                             <ChildIcon
-                              className={cn(
-                                "size-3.5 shrink-0 transition-colors",
-                                active
-                                  ? "text-cyan-200"
-                                  : "text-white/38 group-hover/sub:text-cyan-100/75",
-                              )}
+                              className={iconClass}
                               strokeWidth={active ? 2.4 : 1.9}
                             />
                             <span className="truncate">{child.label}</span>
