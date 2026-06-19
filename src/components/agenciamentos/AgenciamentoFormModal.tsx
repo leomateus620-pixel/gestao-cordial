@@ -49,9 +49,6 @@ type FormState = {
   origem: AgenciamentoOrigem;
   status: AgenciamentoStatus;
   checklist: AgenciamentoChecklist;
-  driveFolderUrl: string;
-  siteUrl: string;
-  observacoesInternas: string;
 };
 
 type AgenciamentoFormModalProps = {
@@ -126,9 +123,6 @@ function initialForm(
       videoRealizado: false,
       validado: false,
     },
-    driveFolderUrl: agenciamento?.driveFolderUrl ?? "",
-    siteUrl: agenciamento?.siteUrl ?? "",
-    observacoesInternas: agenciamento?.observacoesInternas ?? "",
   };
 }
 
@@ -244,9 +238,9 @@ export function AgenciamentoFormModal({
       origem: form.origem,
       status: form.checklist.validado ? "validado" : form.status,
       checklist: form.checklist,
-      driveFolderUrl: form.driveFolderUrl.trim(),
-      siteUrl: form.siteUrl.trim(),
-      observacoesInternas: form.observacoesInternas.trim(),
+      driveFolderUrl: agenciamento?.driveFolderUrl ?? "",
+      siteUrl: agenciamento?.siteUrl ?? "",
+      observacoesInternas: agenciamento?.observacoesInternas ?? "",
       criadoPorId: agenciamento?.criadoPorId,
       criadoPorNome: agenciamento?.criadoPorNome,
       validadoPorId: agenciamento?.validadoPorId,
