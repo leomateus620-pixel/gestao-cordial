@@ -567,33 +567,6 @@ export function AgenciamentoFormModal({
                   })}
                 </div>
               </FormSection>
-
-              <FormSection title="Links e observações" step="05">
-                <Field label="Link da pasta do Drive" error={errors.driveFolderUrl}>
-                  <input
-                    value={form.driveFolderUrl}
-                    onChange={(event) => update("driveFolderUrl", event.target.value)}
-                    className={inputClassName}
-                    placeholder="https://drive.google.com/..."
-                  />
-                </Field>
-                <Field label="Link do imóvel no site" error={errors.siteUrl}>
-                  <input
-                    value={form.siteUrl}
-                    onChange={(event) => update("siteUrl", event.target.value)}
-                    className={inputClassName}
-                    placeholder="https://..."
-                  />
-                </Field>
-                <Field label="Observações internas">
-                  <textarea
-                    value={form.observacoesInternas}
-                    onChange={(event) => update("observacoesInternas", event.target.value)}
-                    className={cn(inputClassName, "h-auto min-h-28 resize-none py-3")}
-                    placeholder="Pendências, combinados, validações e contexto para gestão."
-                  />
-                </Field>
-              </FormSection>
             </div>
           </div>
         </div>
