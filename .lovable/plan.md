@@ -1,59 +1,56 @@
+# Polimento do módulo Agenciamentos
 
-## Resultado da auditoria do menu Corretores
+Revisão focada, sem reescrever módulos nem tocar em integrações externas (Drive, WhatsApp, banco real seguem fora). Mantém arquitetura, 3D e identidade visual atuais.
 
-A implementação está completa e coerente com o escopo:
+## 1. Hero `Agenciamentos` vira o ponto de entrada do cadastro
+Arquivo: `src/routes/_app.agenciamentos.tsx`
 
-- Rota `/corretores` com guard `admin_owner` + `corretores:read` e fallback "Acesso restrito".
-- Permissões: módulo `corretores` exclusivo do `admin_owner` (sidebar e roteamento já restringem corretor, secretária e financeiro).
-- `useCorretores` centraliza store, normalização, filtros, ranking, summary e dados para o dashboard, com `useMemo` em todas as derivações.
-- Service com normalização defensiva (fallback para `LegacyCorretor`), filtros, ranking, summary, chart e cálculo de checklist.
-- Tela com hero gradient + 6 KPIs + filtros + ranking compacto (Top 3 + destaques) + grid de cards 3D + drawer com 4 abas (Desempenho, Agenciamentos, Comissões, Histórico).
-- Dashboard tem `TeamPerformanceCard` e gráfico admin-only com link "Ver corretores".
+- Adicionar CTA `Cadastrar agenciamento` (ícone `ClipboardCheck`/`Plus`) dentro do próprio `<section>` hero, ao lado dos `HeroPill` no desktop e abaixo dos pills no mobile (largura total confortável).
+- CTA chama `openCreate`. Respeita permissão: se `!canCreate`, renderiza desabilitado (admin sempre vê; corretor sem permissão fica disabled; financeiro nem entra na rota).
+- Botão com `bg-white text-[#174d61]`, hover/active sutis, `touch-action: manipulation`, foco acessível com `ring-cyan-200/55`. Sem clique no hero inteiro.
 
-Restam ajustes finos, sem reescrever nada.
+## 2. Remover card dedicado `Novo agenciamento`
+- Remover render de `<AgenciamentoCreateCard />` em `_app.agenciamentos.tsx` e remover o import.
+- Deletar `src/components/agenciamentos/AgenciamentoCreateCard.tsx` (sem outros consumidores) para evitar código morto.
 
-## Bugs e polimento a corrigir
+## 3. Repaginar `AgenciamentoFormModal` (legibilidade premium)
+Arquivo: `src/components/agenciamentos/AgenciamentoFormModal.tsx`
 
-1. **Performance no Dashboard para perfis não-admin** — `_app.index.tsx` chama `useCorretores()` sempre, calculando ranking/summary/chart mesmo quando `isAdminOwner` é falso. Ajuste: tornar essas derivações `dashboard*` lazy (calcular só quando necessário) — solução mínima é renomear o hook para aceitar `{ skipDashboard?: boolean }` ou condicionar no consumidor via `useMemo` baseado em `isAdminOwner`. Manter API atual; só evitar trabalho extra.
+- Background do modal: trocar `bg-[#f7f3ed]` apagado por uma superfície mais quente e nítida (`bg-[#f4ece1]`/`#f1ebe0` + ring `ring-foreground/8`) com sombra mantida.
+- Header: aumentar contraste do título (`text-foreground`), subtítulo `text-foreground/65`, eyebrow `text-primary`, divisor `border-foreground/10`, fundo `bg-white/75`.
+- `inputClassName`: trocar `bg-white/[0.72]` por `bg-white`, borda `border-foreground/12`, texto `text-foreground`, placeholder `text-foreground/45`, foco `ring-2 ring-[color:var(--system-accent,#1e647d)]/30 border-primary/50`. Aplicar o mesmo padrão aos `SelectTrigger` (remover `bg-white/[0.72]`).
+- `FormSection`: virar bloco branco (`bg-white`), `rounded-2xl`, `ring-1 ring-foreground/8`, sombra leve, com cabeçalho `step` em pill teal e título `text-foreground font-bold`. Manter ordem: 01 Imóvel, 02 Proprietário, 03 Responsável e data, 04 Checklist operacional, 05 Links e observações.
+- `Field`: label `text-[11px] uppercase tracking-[0.16em] text-foreground/65 font-semibold`. Mensagem de erro `text-[var(--system-accent-dark)]`.
+- Rodapé: barra sticky inferior com `bg-white/90 backdrop-blur border-t border-foreground/10`, padding seguro `pb-[max(env(safe-area-inset-bottom),1rem)]`. Botão principal teal (`bg-[#174d61] text-white hover:bg-[#1e647d]`) com loading e ícone `Save`. Cancelar `variant="ghost"`.
+- Mobile: bottom-sheet mantém, header compacto, rodapé fixo sempre visível.
 
-2. **`CorretoresFilters` — input de busca dessincroniza com o Select de corretor** — digitar no input livre coloca um valor parcial em `filters.busca`, e o Select cai para "todos" (porque não encontra match exato). Ajuste mínimo: separar conceitos — input livre escreve em `filters.busca`; quando usuário escolhe no Select, também grava em `filters.busca` (já faz), mas ao limpar o input não voltar para "todos" com flicker. Solução: usar `selectedBroker?.nome ?? ""` como valor controlado e adicionar `placeholder` "Todos os corretores" no trigger quando vazio.
+## 4. Checklist operacional mais claro
+Mesmo modal + `AgenciamentoCard`/Drawer onde aparece resumo:
 
-3. **`CorretorCard` — tilt 3D no mobile** — `handlePointerMove` já ignora `touch`, mas `transformStyle: preserve-3d` + `perspective` permanecem ativos. No mobile (≤768px) reduzir para sem tilt: aplicar `@media (max-width: 768px)` na regra de transform via classe utilitária, mantendo só hover `scale` em desktop. Reduz custo de composição em listas longas.
+- Cada linha do checklist vira card branco com ícone à esquerda, switch à direita, label `text-foreground` e estado concluído com leve background verde-teal (`bg-emerald-500/8 ring-emerald-500/20`).
+- Item `validado`: pill `Admin` ao lado do título; switch `disabled` quando `!canManage`, com tooltip/aria explicando.
+- Atualizar resumo do checklist no `AgenciamentoCard` (barra de progresso com `bg-foreground/10` + preenchimento teal e texto `x/6`).
 
-4. **Hero da rota — pílulas no mobile** — `grid grid-cols-3` ocupa linha inteira; em telas estreitas (390px), o valor `45%` quebra. Aplicar `min-w-0` + `text-base` no mobile e `sm:text-lg`. Pequeno ajuste tipográfico.
+## 5. Cards e filtros — limpeza
+- `AgenciamentoCard`: revisar hierarquia (título maior, status badge com contraste, proprietário em linha separada, ações em rodapé sem sobrepor checklist). Mover detalhes secundários (origem, observações longas) para o Drawer.
+- `AgenciamentoFilters`: reduzir altura/spacing, agrupar avançados (checklist/tipo/período) atrás de um botão `Filtros` no mobile (`Sheet`), manter busca + status + corretor visíveis. Botão `Limpar` discreto.
 
-5. **`CorretoresSummaryCards` — `xl:grid-cols-6`** — em 1280–1366px os 6 cards ficam com largura 200px e o valor `R$ 19,5k` se aproxima do limite. Mudar fallback para `lg:grid-cols-3 xl:grid-cols-6 2xl:grid-cols-6` está OK; reduzir `text-3xl` para `text-2xl` no xl mantém leitura sem corte.
+## 6. Ranking, Dashboard e Corretores — não regredir
+- `AgenciamentosRanking`: garantir compactação, sem truncar nomes, só admin.
+- `_app.index.tsx`: confirmar que o resumo de agenciamentos só aparece para admin (`isAdminOwner`) e mantém o `skipDashboard` do passo anterior; números devem casar com `useAgenciamentos`.
+- `useCorretores`: validar que métricas de agenciamentos não geram `undefined`; fallback para `0` quando ausente. Sem reescrever Corretores.
 
-6. **`CorretorDetailDrawer` — close button** — Já posicionado com `[&>button]:right-5 [&>button]:top-5`. Adicionar `z-10` para garantir cliques acima do header em algumas resoluções.
+## 7. Permissões e normalização
+- Reconfirmar em `useAgenciamentos`/`services/agenciamentos.ts`: admin (tudo + validar), corretor (próprios, sem validar final), financeiro (sem menu/rota), secretaria (segue regra atual).
+- `app-store.ts`: ao reidratar, garantir fallback `agenciamentos: []`, `checklist` default completo, `links` opcionais como string vazia.
 
-7. **`CorretorDetailDrawer` — drawer no mobile** — `side="right"` em `w-full max-w-full` no mobile vira full-screen — ok, mas a animação lateral é menos natural que bottom-sheet. Como já está no escopo "bottom-sheet ou full-screen", manter full-screen e apenas garantir `h-dvh` (já está) e `overscroll-behavior: contain` no container scrollável para evitar puxar a página atrás.
+## 8. Performance e textos
+- Manter `useMemo`/`useCallback` já presentes; adicionar `React.memo` em `AgenciamentoCard` se ainda não estiver.
+- Reduzir `backdrop-blur` em overlays mobile (`sm:backdrop-blur-sm` apenas em ≥sm).
+- Revisar textos visíveis no módulo para acentuação correta (imóvel, validação, proprietário, observações, descrição, região, formulário, gestão, mês) em hero, modal, checklist, cards, filtros, drawer e empty state.
 
-8. **Console warnings de recharts** (`width(-1) and height(-1)`) — vêm de ResponsiveContainer renderizando antes do layout estabilizar. No `ChartCard "Performance da equipe"` adicionar `minWidth={0}` no container e garantir que o pai tenha `min-w-0`. Bug pré-existente do Dashboard que toca a equipe; aproveitar para mitigar.
-
-9. **Dados mock** — confirmar que `corretoresSeed` tem ao menos 4 corretores (Marcos, Paula, Felipe, Camila), distribuídos entre Cordial/Morar/Ambas, com 1 inativo. Se não tiver, completar em `src/lib/mock/data.ts` mantendo o formato `LegacyCorretor` (normalização preenche o resto).
-
-10. **Validação rápida** — após as edições, rodar:
-    - `bunx tsc --noEmit` (verificação de tipos local) — opcional, build do harness cobre.
-    - Navegação manual via Playwright a `/corretores` em viewport 390 e 1366; abrir drawer; trocar filtros; checar console.
-
-## Não fazer
-
-- Não introduzir banco real / Supabase / APIs externas.
-- Não tocar em Agenciamentos.
-- Não refatorar arquitetura nem alterar identidade visual.
-- Não mexer em outras rotas além dos ajustes mínimos de performance no Dashboard.
-
-## Arquivos a editar
-
-- `src/routes/_app.index.tsx` (lazy dashboard derivations, minWidth no chart)
-- `src/routes/_app.corretores.tsx` (hero pills polish)
-- `src/components/corretores/CorretoresFilters.tsx` (sincronia busca/select)
-- `src/components/corretores/CorretoresSummaryCards.tsx` (tipografia xl)
-- `src/components/corretores/CorretorCard.tsx` (desativar tilt no mobile)
-- `src/components/corretores/CorretorDetailDrawer.tsx` (z-index do close + overscroll)
-- `src/hooks/useCorretores.ts` (opção `skipDashboard`)
-- `src/lib/mock/data.ts` (apenas se faltar corretor do seed)
-
-## Checklist final a reportar após implementar
-
-build, rota `/corretores`, guard admin-only, filtros isolados/combinados, ranking, cards, drawer, comissões previstas/pagas, seção do Dashboard, link "Ver corretores", desktop 1366px, mobile 390px, console sem warnings novos.
+## Validação final
+- Rota `/agenciamentos` abre sem tela branca; CTA do hero abre modal; sem card dedicado.
+- Modal legível, rodapé sempre visível mobile, checklist claro, validado bloqueado para corretor.
+- Dashboard admin com resumo correto; Corretores sem regressão.
+- Desktop 1366px e mobile 390px ok; console limpo.
